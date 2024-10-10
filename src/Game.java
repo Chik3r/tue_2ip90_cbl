@@ -42,7 +42,7 @@ public class Game implements Runnable {
 
             // Frame rate
             long now = System.nanoTime();
-            long elapsedMillis = (now - lastUpdateTime) / 1_000_000;
+            float elapsedMillis = (now - lastUpdateTime) / 1_000_000.0f;
 
             // Update the physics as many times as needed to catch up
             int updateCount = 0;

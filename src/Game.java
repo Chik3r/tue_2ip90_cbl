@@ -92,13 +92,14 @@ public class Game implements Runnable {
         do {
             do {
                 Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
+                GraphicsWrapper wrapper = new GraphicsWrapper(g, frameBounds);
                 // Clear image
                 g.setColor(Color.white);
                 g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
 
                 // TODO: Depth
                 for (Entity entity : entities) {
-                    entity.draw(deltaTime, g, frameBounds);
+                    entity.draw(deltaTime, wrapper);
                 }
 
                 g.dispose();

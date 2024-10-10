@@ -4,7 +4,7 @@ public class ExampleEntity extends Entity {
     int xPos = 0;
 
     @Override
-    public void draw(float deltaTime, Graphics g, Rectangle bounds) {
+    public void draw(float deltaTime, GraphicsWrapper g) {
 //        // Example drawing
 //        g.setColor(Color.gray);
 //        g.drawString("Hello world!", frameBounds.x, frameBounds.y + 20);
@@ -13,7 +13,7 @@ public class ExampleEntity extends Entity {
 
         g.setColor(Color.pink);
         // TODO: Wrapper class for Graphics that automatically adds the offset for the top bar of the window
-        g.fillOval(xPos + bounds.x, bounds.y + 200, 75, 75);
+        g.fillOval(xPos, 200, 75, 75);
     }
 
     @Override

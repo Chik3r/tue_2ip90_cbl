@@ -27,33 +27,40 @@ public class Game implements Runnable {
     private void gameLoop() {
         long lastUpdateTime = System.nanoTime();
 
+        long fpsStartTime = System.currentTimeMillis();
+        int frameCount = 0;
+
         while (true) {
+            if (frameCount % (FRAMES_PER_SECOND / 2) == 0) {
+                System.out.println(frameCount / ((System.currentTimeMillis() - fpsStartTime) / 1000d));
+            }
+
             // Input logic
             // ...
 
             // Frame rate
             long now = System.nanoTime();
-            long elapsedNanos = now - lastUpdateTime;
-            long elapsedMillis = elapsedNanos / 1_000_000;
+            long elapsedMillis = (now - lastUpdateTime) / 1_000_000;
 
             // Update the physics as many times as needed to catch up
             int updateCount = 0;
-            while (elapsedNanos >= TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BETWEEN_RENDER) {
+            while (now - lastUpdateTime >= TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BETWEEN_RENDER) {
                 update(elapsedMillis);
                 lastUpdateTime += TIME_BETWEEN_UPDATES;
                 updateCount++;
             }
 
             // If we're still delayed, skip the remaining updates
-            if (elapsedNanos >= TIME_BETWEEN_UPDATES) {
+            if (now - lastUpdateTime >= TIME_BETWEEN_UPDATES) {
                 lastUpdateTime = now - TIME_BETWEEN_UPDATES;
             }
 
             draw(elapsedMillis);
+            frameCount++;
 
             // Wait for enough time to have passed until the next frame
-            long lastRenderTime = System.nanoTime();
-            while (now - lastRenderTime < TIME_BETWEEN_UPDATES && now - lastUpdateTime < TIME_BETWEEN_UPDATES) {
+            long lastRenderTime = now;
+            while (now - lastRenderTime < TIME_BETWEEN_UPDATES && now - lastUpdateTime <= TIME_BETWEEN_UPDATES) {
                 Thread.yield();
                 now = System.nanoTime();
             }

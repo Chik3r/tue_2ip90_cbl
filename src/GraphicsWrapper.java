@@ -17,7 +17,17 @@ public class GraphicsWrapper {
         graphics.fillOval(x + bounds.x, y + bounds.y, width, height);
     }
 
+    public void fillOval(int x, int y, int width, int height, Color color) {
+        setColor(color);
+        fillOval(x, y, width, height);
+    }
+
     public void fillRect(int x, int y, int width, int height) {
         graphics.fillRect(x + bounds.x, y + bounds.y, width, height);
+    }
+
+    public void fillRect(int x, int y, int width, int height, Color color) {
+        setColor(color);
+        fillRect(x, y, width, height);
     }
 }

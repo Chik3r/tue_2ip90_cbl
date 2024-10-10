@@ -11,9 +11,7 @@ public class ExampleEntity extends Entity {
 //        double v = Math.sin(System.currentTimeMillis() / 1000.0) + 1;
 //        g.fillRect(frameBounds.x, frameBounds.y, (int) (v * 100), (int) (v * 100));
 
-        g.setColor(Color.pink);
-        // TODO: Wrapper class for Graphics that automatically adds the offset for the top bar of the window
-        g.fillOval(xPos, 200, 75, 75);
+        g.fillOval(xPos, 200, 75, 75, Color.pink);
     }
 
     @Override

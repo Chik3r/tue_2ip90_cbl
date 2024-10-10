@@ -3,6 +3,9 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
+        Game game = new Game();
+        SwingUtilities.invokeLater(game);
+
         Runnable guiCreator = new Runnable() {
             @Override
             public void run() {

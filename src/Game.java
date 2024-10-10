@@ -4,6 +4,12 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
 public class Game implements Runnable {
+    private static final int FRAMES_PER_SECOND = 60;
+    // Time between updates in nanoseconds
+    private static final long TIME_BETWEEN_UPDATES = 1_000_000_000 / FRAMES_PER_SECOND;
+    // Max number of times the physics can update between each render
+    private static final int MAX_UPDATES_BETWEEN_RENDER = 1;
+
     private final ArrayList<Entity> entities = new ArrayList<>();
     JFrame frame;
     Rectangle frameBounds;
@@ -19,13 +25,38 @@ public class Game implements Runnable {
     }
 
     private void gameLoop() {
+        long lastUpdateTime = System.nanoTime();
+
         while (true) {
-            // Frame rate logic
-
             // Input logic
+            // ...
 
-            update(0.01f);
-            draw(0.01f);
+            // Frame rate
+            long now = System.nanoTime();
+            long elapsedNanos = now - lastUpdateTime;
+            long elapsedMillis = elapsedNanos / 1_000_000;
+
+            // Update the physics as many times as needed to catch up
+            int updateCount = 0;
+            while (elapsedNanos >= TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BETWEEN_RENDER) {
+                update(elapsedMillis);
+                lastUpdateTime += TIME_BETWEEN_UPDATES;
+                updateCount++;
+            }
+
+            // If we're still delayed, skip the remaining updates
+            if (elapsedNanos >= TIME_BETWEEN_UPDATES) {
+                lastUpdateTime = now - TIME_BETWEEN_UPDATES;
+            }
+
+            draw(elapsedMillis);
+
+            // Wait for enough time to have passed until the next frame
+            long lastRenderTime = System.nanoTime();
+            while (now - lastRenderTime < TIME_BETWEEN_UPDATES && now - lastUpdateTime < TIME_BETWEEN_UPDATES) {
+                Thread.yield();
+                now = System.nanoTime();
+            }
         }
     }
 

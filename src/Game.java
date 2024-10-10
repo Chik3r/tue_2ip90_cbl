@@ -8,22 +8,28 @@ public class Game implements Runnable {
     JFrame frame;
     Rectangle frameBounds;
     BufferStrategy bufferStrategy;
+    Thread gameLoopThread;
 
     @Override
     public void run() {
-        Initialize();
+        initialize();
 
+        gameLoopThread = new Thread(this::gameLoop);
+        gameLoopThread.start();
+    }
+
+    private void gameLoop() {
         while (true) {
             // Frame rate logic
 
             // Input logic
 
-            Update(0.01f);
-            Draw(0.01f);
+            update(0.01f);
+            draw(0.01f);
         }
     }
 
-    private void Initialize() {
+    private void initialize() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -41,7 +47,7 @@ public class Game implements Runnable {
         frameBounds.y = insets.top;
     }
 
-    private void Draw(float deltaTime) {
+    private void draw(float deltaTime) {
         // Clear background
         do {
             do {
@@ -52,7 +58,7 @@ public class Game implements Runnable {
 
                 // TODO: Depth
                 for (Entity entity : entities) {
-                    entity.Draw(deltaTime, g, frameBounds);
+                    entity.draw(deltaTime, g, frameBounds);
                 }
 
                 // Example drawing
@@ -67,9 +73,9 @@ public class Game implements Runnable {
         } while (bufferStrategy.contentsLost());
     }
 
-    private void Update(float deltaTime) {
+    private void update(float deltaTime) {
         for (Entity entity : entities) {
-            entity.Update(deltaTime);
+            entity.update(deltaTime);
         }
     }
 }

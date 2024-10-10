@@ -18,7 +18,9 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-        initialize();
+        initializeDrawing();
+
+        entities.add(new ExampleEntity());
 
         gameLoopThread = new Thread(this::gameLoop);
         gameLoopThread.start();
@@ -67,7 +69,7 @@ public class Game implements Runnable {
         }
     }
 
-    private void initialize() {
+    private void initializeDrawing() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -98,12 +100,6 @@ public class Game implements Runnable {
                 for (Entity entity : entities) {
                     entity.draw(deltaTime, g, frameBounds);
                 }
-
-                // Example drawing
-                g.setColor(Color.gray);
-                g.drawString("Hello world!", frameBounds.x, frameBounds.y + 20);
-                double v = Math.sin(System.currentTimeMillis() / 1000.0) + 1;
-                g.fillRect(frameBounds.x, frameBounds.y, (int) (v * 100), (int) (v * 100));
 
                 g.dispose();
             } while (bufferStrategy.contentsRestored());

@@ -1,17 +1,27 @@
 import java.awt.*;
-// import javax.swing.JFrame;  
-// 
+
+/**
+ * This is a Ball.
+ */
 public class Ball extends Entity {
     private Vector2d pos; 
     private Vector2d velocity;
-    static final int RADIUS = 25; // arbitrary number. needs to be tested
-    static final double GRAVITY = 980; // arbitrary number. needs to be tested
-    static final double STARTING_SPEED = 1500; //same here
+    // TODO: test the perfect values for constants
+    static final int RADIUS = 25; // radius of the ball
+    static final double GRAVITY = 980; // the amount velocity.y should increase every second
+    static final double STARTING_SPEED = 1500; //the length of velocity when shooting ball
     Toolkit t = Toolkit.getDefaultToolkit();
     Image kees = t.getImage("assets/kees_ball.png");
     
+    /**
+     * constructor for Ball.
+     * @param x x coord of the top left of the ball
+     * @param y y coord of the top left of the ball
+     */
     public Ball(int x, int y) {
         this.pos = new Vector2d(x, y);
+        // TODO: ball shooter should change this value to the vector
+        // TODO: pointing from the center top of the screen to the end of the cannon
         this.velocity = new Vector2d(30, 1).unit().scalarmult(STARTING_SPEED);
     }
 
@@ -19,48 +29,77 @@ public class Ball extends Entity {
         return pos;
     }
 
+    /**
+     * Draws the ball onto the canvas.
+     * Currently draws Kees because fnuyy.
+     */
     public void draw(Graphics g, Rectangle bounds) {
         g.drawImage(kees, (int) pos.x, (int) pos.y, RADIUS, RADIUS, null);
         // System.out.println("I am being drawn");
     }
 
+    /**
+     * Updates the velocity and position of the ball
+     * then checks if it collides with anything.
+     */
     public void update(float deltaTime) {
         updateVelocity(deltaTime);
-        collisionCheck();
         updatePos(deltaTime);
+        collisionCheck();
     }
 
+    /**
+     * Adds an amount of gravity to velocity based on deltaTime.
+     * @param deltaTime the amount of time since the last update (in miliseconds)
+     */
     public void updateVelocity(float deltaTime) {
         //deltatime in seconds
         velocity.y += GRAVITY * (deltaTime / 1000);
     }
+
+    /**
+     * Adds an amount of current velocity to position based on deltaTime.
+     * @param deltaTime the amount of time since the last update (in miliseconds)
+     */
     public void updatePos(float deltaTime) {
         //deltatime in seconds
         pos.x += velocity.x * (deltaTime / 1000);
         pos.y += velocity.y * (deltaTime / 1000);    
     }
 
+    /**
+     * Checks if the ball collided with anything after moving.
+     */
     public void collisionCheck() {
+        // TODO: implement collision check
         //check if the object collided with any entity or the side/top walls
-        //if it did call the appropriate method
+        //if it did call create a Hit obj and call collisionCalc
     }
 
-    public void collisionCircle() {
-        // calculate the tangent of the static cirle at the point of collision
-        // get the normal unit vector of that tangent
-        // dotp of the velocity and unit vector * (pointed invard)normal unit vector == parallel (to normal) component
+    /**
+     * Upon collision resets the ball to before the collision and updates its velocity. 
+     * @param hit The characteristics of the collision.
+     */
+    public void collisionCalc(Hit hit) {
+        // puts ball back to before collision
+        pos.x -= hit.deltaX();
+        pos.y -= hit.deltaY();
+
+        // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)
+        // (invard pointing) normal unit vector of the tangent
+        Vector2d normalunit = new Vector2d(hit.normalX(), hit.normalY()).unit();
+        // dotp of velocity and unit vector * normal unit vector == parallel (to normal) component
+        double dotproduct = velocity.dotp(normalunit);
+        Vector2d parallelcomponent = normalunit.scalarmult(dotproduct);
         // vecolity - parallel component == parallel (to tangent) component
+        Vector2d perpendicularcomponent = velocity.subtract(parallelcomponent);
         // parallel (to tangent) - parallel (to normal) = reflected vector
-        // reflected vector is the new velocity
-    }
+        Vector2d reflectedvector = perpendicularcomponent.subtract(parallelcomponent);
+        velocity = reflectedvector;
 
-    public void collisionRect() {
-        // this also includes the walls
+        // in the case of a wall/rect that has a side parallel to the x/y axis
+        // this is the same as just reversing the x on side and y on top collision
 
-        // if we only have rectangles that arent rotated then this is more than enough
-        // otherwise we would need to get the line of the side it collides with and do the same as the circle collision
-
-        // if the collision happened on the side then reverse x
-        // if the collision happened on the top/bottom ten reverse y
+        // of course this can be written better but this way its clearer for now
     }
 }

@@ -91,7 +91,7 @@ public class PolygonCollider extends Collider {
                 }
 
                 if (!(bMax >= aMin && aMax >= bMin)) {
-                    return false;
+                    return null;
                 }
             }
         }

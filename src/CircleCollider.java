@@ -17,17 +17,27 @@ public class CircleCollider extends Collider {
     }
 
     @Override
-    protected boolean isTouchingCircle(CircleCollider collider) {
+    protected Hit isTouchingCircle(CircleCollider collider) {
         var selfWorldCenter = getWorldCenter();
         var otherWorldCenter = collider.getWorldCenter();
-        var distanceSquared = selfWorldCenter.distanceSquared(otherWorldCenter);
+        var distanceVector = otherWorldCenter.subtract(selfWorldCenter);
         var sumRadius = radius + collider.radius;
 
-        return distanceSquared <= sumRadius * sumRadius;
+        if (distanceVector.lengthSquared() > sumRadius * sumRadius) {
+            return null;
+        }
+
+        // Let P = world center of this collider, bb = vector between the centers of the circles
+        // cc = unit vector of bb, and lambda = distance - radius of this circle
+        // Then the delta = P + lambda * cc
+        double lambda = distanceVector.length() - radius;
+        Vector2d delta = selfWorldCenter.add(distanceVector.unit().scalarMult(lambda));
+
+        return new Hit(delta, distanceVector.normal());
     }
 
     @Override
-    protected boolean isTouchingPolygon(PolygonCollider collider) {
-        return false;
+    protected Hit isTouchingPolygon(PolygonCollider collider) {
+        return null;
     }
 }

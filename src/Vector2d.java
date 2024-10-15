@@ -59,4 +59,12 @@ public class Vector2d {
     public double distanceSquared(Vector2d vector) {
         return (x - vector.x) * (x - vector.x) + (y - vector.y) * (y - vector.y);
     }
+
+    @Override
+    public String toString() {
+        return "Vector2d{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

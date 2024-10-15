@@ -99,7 +99,7 @@ public class Game implements Runnable {
 
                 // TODO: Depth
                 for (Entity entity : entities) {
-                    entity.draw(deltaTime, wrapper);
+                    entity.draw(wrapper, frameBounds);
                 }
 
                 g.dispose();

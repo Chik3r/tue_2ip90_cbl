@@ -1,28 +1,34 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This is a Ball.
  */
 public class Ball extends Entity {
-    private Vector2d pos; 
-    private Vector2d velocity;
     // TODO: test the perfect values for constants
     static final int RADIUS = 25; // radius of the ball
     static final double GRAVITY = 980; // the amount velocity.y should increase every second
     static final double STARTING_SPEED = 1500; //the length of velocity when shooting ball
-    Toolkit t = Toolkit.getDefaultToolkit();
-    Image kees = t.getImage("assets/kees_ball.png");
-    
+
+    private Vector2d pos; 
+    private Vector2d velocity;
+
+    Image kees;
+
     /**
-     * constructor for Ball.
-     * @param x x coord of the top left of the ball
-     * @param y y coord of the top left of the ball
+     * Constructor for Ball.
+     * @param x x coordinate of the top left of the ball
+     * @param y y coordinate of the top left of the ball
      */
-    public Ball(int x, int y) {
+    public Ball(int x, int y) throws IOException {
         this.pos = new Vector2d(x, y);
         // TODO: ball shooter should change this value to the vector
         // TODO: pointing from the center top of the screen to the end of the cannon
-        this.velocity = new Vector2d(30, 1).unit().scalarmult(STARTING_SPEED);
+        this.velocity = new Vector2d(30, 1).unit().scalarMult(STARTING_SPEED);
+
+        this.kees = ImageIO.read(new File("assets/kees_ball.png"));
     }
 
     public Vector2d getPos() {
@@ -33,15 +39,16 @@ public class Ball extends Entity {
      * Draws the ball onto the canvas.
      * Currently draws Kees because fnuyy.
      */
-    public void draw(Graphics g, Rectangle bounds) {
-        g.drawImage(kees, (int) pos.x, (int) pos.y, RADIUS, RADIUS, null);
-        // System.out.println("I am being drawn");
+    @Override
+    public void draw(GraphicsWrapper g) {
+        g.drawImage(kees, (int) pos.x, (int) pos.y, RADIUS, RADIUS);
     }
 
     /**
      * Updates the velocity and position of the ball
      * then checks if it collides with anything.
      */
+    @Override
     public void update(float deltaTime) {
         updateVelocity(deltaTime);
         updatePos(deltaTime);
@@ -87,15 +94,15 @@ public class Ball extends Entity {
 
         // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)
         // (invard pointing) normal unit vector of the tangent
-        Vector2d normalunit = new Vector2d(hit.normalX(), hit.normalY()).unit();
+        Vector2d normalUnit = new Vector2d(hit.normalX(), hit.normalY()).unit();
         // dotp of velocity and unit vector * normal unit vector == parallel (to normal) component
-        double dotproduct = velocity.dotp(normalunit);
-        Vector2d parallelcomponent = normalunit.scalarmult(dotproduct);
+        double dotProduct = velocity.dotp(normalUnit);
+        Vector2d parallelComponent = normalUnit.scalarMult(dotProduct);
         // vecolity - parallel component == parallel (to tangent) component
-        Vector2d perpendicularcomponent = velocity.subtract(parallelcomponent);
+        Vector2d perpendicularComponent = velocity.subtract(parallelComponent);
         // parallel (to tangent) - parallel (to normal) = reflected vector
-        Vector2d reflectedvector = perpendicularcomponent.subtract(parallelcomponent);
-        velocity = reflectedvector;
+        Vector2d reflectedVector = perpendicularComponent.subtract(parallelComponent);
+        velocity = reflectedVector;
 
         // in the case of a wall/rect that has a side parallel to the x/y axis
         // this is the same as just reversing the x on side and y on top collision

@@ -48,7 +48,7 @@ public class Vector2d {
         return x * vector.x + y * vector.y;
     }
 
-    public Vector2d scalarmult(double scalar) {
+    public Vector2d scalarMult(double scalar) {
         return new Vector2d(x * scalar, y * scalar);
     }
 }

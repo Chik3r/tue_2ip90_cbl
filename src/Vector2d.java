@@ -22,6 +22,10 @@ public class Vector2d {
         return Math.sqrt(x * x + y * y);
     }
 
+    public double lengthSquared() {
+        return x * x + y * y;
+    }
+
     public Vector2d unit() {
         return new Vector2d(x / length(), y / length());
     }

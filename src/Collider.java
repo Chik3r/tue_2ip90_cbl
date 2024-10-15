@@ -1,6 +1,7 @@
 public abstract class Collider {
     protected Vector2d center;
     protected Vector2d worldPos;
+    // TODO: Angle
 
     public Collider(Vector2d center) {
         this.center = center;
@@ -33,4 +34,5 @@ public abstract class Collider {
 
     protected abstract boolean isTouchingCircle(CircleCollider collider);
     protected abstract boolean isTouchingPolygon(PolygonCollider collider);
+    // TODO: Debug draw method
 }

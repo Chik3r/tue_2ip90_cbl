@@ -49,19 +49,22 @@ public class PolygonCollider extends Collider {
     }
 
     @Override
-    protected boolean isTouchingCircle(CircleCollider collider) {
-        return false;
+    protected Hit isTouchingCircle(CircleCollider collider) {
+        return null;
     }
 
     @Override
-    protected boolean isTouchingPolygon(PolygonCollider collider) {
+    protected Hit isTouchingPolygon(PolygonCollider otherCollider) {
         PolygonCollider collider1 = this;
-        PolygonCollider collider2 = collider;
+        PolygonCollider collider2 = otherCollider;
+
+        double overlap = Double.POSITIVE_INFINITY;
+        Vector2d overlapEdgeNormal = null;
 
         // We need to calculate separating lines for the normals of both objects
         for (int step = 0; step <= 1; step++) {
             if (step == 1) {
-                collider1 = collider;
+                collider1 = otherCollider;
                 collider2 = this;
             }
 
@@ -80,12 +83,22 @@ public class PolygonCollider extends Collider {
                     bMax = Math.max(bMax, dotProduct);
                 }
 
-                if (!((aMin <= bMax && aMin >= bMin) || (bMin <= aMax && bMin >= aMin))) {
+                // Calculate overlap along projected axis
+                double newOverlap = Math.min(aMax, bMax) - Math.max(aMin, bMin);
+                if (newOverlap < overlap) {
+                    overlap = newOverlap;
+                    overlapEdgeNormal = n;
+                }
+
+                if (!(bMax >= aMin && aMax >= bMin)) {
                     return false;
                 }
             }
         }
 
-        return true;
+        Vector2d delta = otherCollider.getWorldCenter().subtract(getWorldCenter()).unit();
+        delta = new Vector2d(delta.x * overlap, delta.y * overlap);
+
+        return new Hit(delta, overlapEdgeNormal);
     }
 }

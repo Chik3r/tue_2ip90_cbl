@@ -89,12 +89,11 @@ public class Ball extends Entity {
      */
     public void collisionCalc(Hit hit) {
         // puts ball back to before collision
-        pos.x -= hit.deltaX();
-        pos.y -= hit.deltaY();
+        pos = pos.subtract(hit.delta());
 
         // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)
         // (invard pointing) normal unit vector of the tangent
-        Vector2d normalUnit = new Vector2d(hit.normalX(), hit.normalY()).unit();
+        Vector2d normalUnit = hit.normal().unit();
         // dotp of velocity and unit vector * normal unit vector == parallel (to normal) component
         double dotProduct = velocity.dotp(normalUnit);
         Vector2d parallelComponent = normalUnit.scalarMult(dotProduct);

@@ -13,7 +13,7 @@ public abstract class Collider {
         this.worldPos = worldPos;
     }
 
-    public boolean isTouching(Collider collider) {
+    public Hit isTouching(Collider collider) {
         if (collider instanceof CircleCollider) {
             return isTouchingCircle((CircleCollider) collider);
         } else if (collider instanceof PolygonCollider) {
@@ -21,7 +21,7 @@ public abstract class Collider {
         }
 
         System.out.println("Unknown collider type!");
-        return false;
+        return null;
     }
 
     public void setWorldPos(Vector2d worldPos) {
@@ -32,7 +32,7 @@ public abstract class Collider {
         return center.add(worldPos);
     }
 
-    protected abstract boolean isTouchingCircle(CircleCollider collider);
-    protected abstract boolean isTouchingPolygon(PolygonCollider collider);
+    protected abstract Hit isTouchingCircle(CircleCollider collider);
+    protected abstract Hit isTouchingPolygon(PolygonCollider collider);
     // TODO: Debug draw method
 }

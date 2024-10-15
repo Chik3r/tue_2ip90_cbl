@@ -51,4 +51,8 @@ public class Vector2d {
     public Vector2d scalarMult(double scalar) {
         return new Vector2d(x * scalar, y * scalar);
     }
+
+    public double distanceSquared(Vector2d vector) {
+        return (x - vector.x) * (x - vector.x) + (y - vector.y) * (y - vector.y);
+    }
 }

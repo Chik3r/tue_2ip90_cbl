@@ -2,9 +2,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class PolygonCollider extends Collider {
-    private final ArrayList<Vector2d> origVertices;
-    private final ArrayList<Vector2d> worldVertices;
-    private final HashSet<Vector2d> normals;
+    protected final ArrayList<Vector2d> origVertices;
+    protected final ArrayList<Vector2d> worldVertices;
+    protected final ArrayList<Vector2d> normals;
 
     public PolygonCollider(ArrayList<Vector2d> vertices) {
         this(new Vector2d(0, 0), vertices);
@@ -19,7 +19,7 @@ public class PolygonCollider extends Collider {
 
         this.origVertices = vertices;
         this.worldVertices = new ArrayList<>();
-        this.normals = new HashSet<>();
+        this.normals = new ArrayList<>();
 
         // Normals don't care about the world position of the object
         for (int i = 0; i < vertices.size(); i++) {

@@ -13,6 +13,15 @@ public class GraphicsWrapper {
         graphics.setColor(color);
     }
 
+    public void drawOval(int x, int y, int width, int height) {
+        graphics.drawOval(x + bounds.x, y + bounds.y, width, height);
+    }
+
+    public void drawOval(int x, int y, int width, int height, Color color) {
+        setColor(color);
+        drawOval(x, y, width, height);
+    }
+
     public void fillOval(int x, int y, int width, int height) {
         graphics.fillOval(x + bounds.x, y + bounds.y, width, height);
     }

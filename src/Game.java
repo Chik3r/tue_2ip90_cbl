@@ -101,7 +101,7 @@ public class Game implements Runnable {
     }
 
     private void initializeEntities() {
-        entities.add(new Ball(51, 50));
+        entities.add(new Ball(60, 50));
         entities.add(new CirclePeg(50, 500, 25, false));
     }
 

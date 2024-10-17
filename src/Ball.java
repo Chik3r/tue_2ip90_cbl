@@ -108,7 +108,7 @@ public class Ball extends Entity {
      */
     public void collisionCalc(Hit hit) {
         // puts ball back to before collision
-        pos = pos.subtract(hit.delta());
+        pos = pos.add(hit.delta());
 
         // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)
         // (invard pointing) normal unit vector of the tangent

@@ -30,10 +30,10 @@ public class CircleCollider extends Collider {
         }
 
         // Let P = world center of this collider, bb = vector between the centers of the circles
-        // cc = unit vector of bb, and lambda = distance - radius of this circle
+        // cc = unit vector of bb, and lambda = distance - radius of both circles
         // Then the delta = P + lambda * cc
-        double lambda = distanceVector.length() - radius;
-        Vector2d delta = selfWorldCenter.add(distanceVector.unit().scalarMult(lambda));
+        double lambda = distanceVector.length() - sumRadius;
+        Vector2d delta = distanceVector.unit().scalarMult(lambda);
 
         return new Hit(delta, distanceVector.normal());
     }

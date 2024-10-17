@@ -16,11 +16,15 @@ public class Game implements Runnable {
     BufferStrategy bufferStrategy;
     Thread gameLoopThread;
 
+    public InputManager inputManager = new InputManager();
+
     @Override
     public void run() {
         initializeDrawing();
 
         entities.add(new ExampleEntity());
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(inputManager);
 
         gameLoopThread = new Thread(this::gameLoop);
         gameLoopThread.start();

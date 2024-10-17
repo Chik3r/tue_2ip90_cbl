@@ -88,12 +88,13 @@ public class Game implements Runnable {
     }
 
     private void draw(float deltaTime) {
-        // Clear background
+        // The official documentation recommends to have both of these while loops
+        // https://docs.oracle.com/javase/6/docs/api/java/awt/image/BufferStrategy.html
         do {
             do {
                 Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
                 GraphicsWrapper wrapper = new GraphicsWrapper(g, frameBounds);
-                // Clear image
+                // Clear frame
                 g.setColor(Color.white);
                 g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
 

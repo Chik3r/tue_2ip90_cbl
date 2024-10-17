@@ -42,7 +42,7 @@ public class CircleCollider extends Collider {
     protected Hit isTouchingPolygon(PolygonCollider collider) {
         int numVerticesPolygon = collider.worldVertices.size();
 
-        double overlap = Double.POSITIVE_INFINITY;
+        double overlap = Double.NEGATIVE_INFINITY;
         Hit hitInfo = null;
 
         for (int i = 0; i < numVerticesPolygon; i++) {
@@ -51,7 +51,7 @@ public class CircleCollider extends Collider {
                 continue;
             }
 
-            if (overlap > hit.delta().length()) {
+            if (overlap < hit.delta().length()) {
                 overlap = hit.delta().length();
                 hitInfo = hit;
             }
@@ -67,7 +67,7 @@ public class CircleCollider extends Collider {
         var line = lineEnd.subtract(lineStart);
         var dot = centerToLineStart.dotp(line) / line.length();
 
-        Vector2d closest = lineStart.add(line.scalarMult(dot));
+        Vector2d closest = lineStart.add(line.unit().scalarMult(dot));
         double closestDistanceSum = Math.sqrt(closest.distanceSquared(lineStart)) + Math.sqrt(closest.distanceSquared(lineEnd));
         if (Math.abs(closestDistanceSum - line.length()) > 0.001) {
             // 0.001 to account for some error

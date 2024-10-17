@@ -35,7 +35,7 @@ public class CircleCollider extends Collider {
         double lambda = distanceVector.length() - sumRadius;
         Vector2d delta = distanceVector.unit().scalarMult(lambda);
 
-        return new Hit(delta, distanceVector.normal());
+        return new Hit(delta, distanceVector);
     }
 
     @Override

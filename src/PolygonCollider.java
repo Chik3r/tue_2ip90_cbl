@@ -50,7 +50,10 @@ public class PolygonCollider extends Collider {
 
     @Override
     protected Hit isTouchingCircle(CircleCollider collider) {
-        return null;
+        // Can be skipped since we normally won't need to check if a polygon is colliding with a
+        // circle, just if the ball is colliding with polygons.
+
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

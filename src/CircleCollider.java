@@ -40,73 +40,32 @@ public class CircleCollider extends Collider {
 
     @Override
     protected Hit isTouchingPolygon(PolygonCollider collider) {
-        Vector2d selfWorldCenter = getWorldCenter();
-
-        ArrayList<Vector2d> circleVertices = new ArrayList<>();
-        ArrayList<Vector2d> polyVertices = collider.worldVertices;
-        ArrayList<Vector2d> normals1 = collider.normals;
-        ArrayList<Vector2d> normals2 = new ArrayList<>();
-
-        for (int i = 0; i < polyVertices.size(); i++) {
-            normals2.add(selfWorldCenter.subtract(polyVertices.get(i)));
-        }
+        int numVerticesPolygon = collider.worldVertices.size();
 
         double overlap = Double.POSITIVE_INFINITY;
-        Vector2d overlapEdgeNormal = null;
+        Hit hitInfo = null;
 
-        // We need to calculate separating lines for the normals of both objects
-        for (int step = 0; step <= 1; step++) {
-            if (step == 1) {
-                normals1 = normals2;
-                normals2 = collider.normals;
+        for (int i = 0; i < numVerticesPolygon; i++) {
+            Hit hit = isTouchingLine(collider.worldVertices.get(i), collider.worldVertices.get((i + 1) % numVerticesPolygon));
+            if (hit == null) {
+                continue;
             }
 
-            for (Vector2d n : normals1) {
-                double aMin = Double.POSITIVE_INFINITY, aMax = Double.NEGATIVE_INFINITY;
-                for (Vector2d v : polyVertices) {
-                    double dotProduct = n.dotp(v);
-                    aMin = Math.min(aMin, dotProduct);
-                    aMax = Math.max(aMax, dotProduct);
-                }
-
-                // Extend from the center of the circle to the edge parallel to the normal,
-                // and find the two points that will become the "vertices".
-                circleVertices.clear();
-                circleVertices.add(selfWorldCenter.add(n.unit().scalarMult(radius)));
-                circleVertices.add(selfWorldCenter.subtract(n.unit().scalarMult(radius)));
-
-                double bMin = Double.POSITIVE_INFINITY, bMax = Double.NEGATIVE_INFINITY;
-                for (Vector2d v : circleVertices) {
-                    double dotProduct = n.dotp(v);
-                    bMin = Math.min(bMin, dotProduct);
-                    bMax = Math.max(bMax, dotProduct);
-                }
-
-                // Calculate overlap along projected axis
-                double newOverlap = Math.min(aMax, bMax) - Math.max(aMin, bMin);
-                if (newOverlap < overlap) {
-                    overlap = newOverlap;
-                    overlapEdgeNormal = n;
-                }
-
-                if (!(bMax >= aMin && aMax >= bMin)) {
-                    return null;
-                }
+            if (overlap > hit.delta().length()) {
+                overlap = hit.delta().length();
+                hitInfo = hit;
             }
         }
 
-        Vector2d delta = collider.getWorldCenter().subtract(getWorldCenter()).unit();
-        delta = new Vector2d(delta.x * overlap, delta.y * overlap);
-
-        return new Hit(delta, overlapEdgeNormal);
+        return hitInfo;
     }
 
     private Hit isTouchingLine(Vector2d lineStart, Vector2d lineEnd) {
         Vector2d worldCenter = getWorldCenter();
 
-        var lineCircle = lineStart.subtract(worldCenter);
+        var centerToLineStart = worldCenter.subtract(lineStart);
         var line = lineEnd.subtract(lineStart);
-        var dot = lineCircle.dotp(line) / line.length();
+        var dot = centerToLineStart.dotp(line) / line.length();
 
         Vector2d closest = lineStart.add(line.scalarMult(dot));
         double closestDistanceSum = Math.sqrt(closest.distanceSquared(lineStart)) + Math.sqrt(closest.distanceSquared(lineEnd));
@@ -114,13 +73,37 @@ public class CircleCollider extends Collider {
             // 0.001 to account for some error
             // If the sum of the distance of the closest point to both extremes of the line is
             // greater than the length of the line, then the point isn't on the line
+
+            // If the circle is near one of the vertices, then we need to calculate
+            // the delta away from that vertex
+            if (worldCenter.distanceSquared(lineStart) <= radius * radius) {
+                // Similar calculations to the code at the end of the method, but calculating
+                // against an edge instead of the closest point.
+                double k = radius - centerToLineStart.length();
+                Vector2d delta = centerToLineStart.unit().scalarMult(k);
+                return new Hit(delta, line.normal());
+            } else if (worldCenter.distanceSquared(lineEnd) <= radius * radius) {
+                Vector2d centerEndLine = worldCenter.subtract(lineEnd);
+                double k = radius - centerEndLine.length();
+                Vector2d delta = centerEndLine.unit().scalarMult(k);
+                return new Hit(delta, line.normal());
+            }
+
+            // The circle center isn't near the line segment or a vertex of the line, so
+            // it isn't hitting the line.
             return null;
         }
 
         // k should be the radius of the circle - the distance of the center to the closest point
         // Then delta is k * (line between closest point and circle)
         Vector2d centerClosestLine = worldCenter.subtract(closest);
-        double k = radius - centerClosestLine.length();
+
+        double length = centerClosestLine.length();
+        if (length > radius) {
+            return null;
+        }
+
+        double k = radius - length;
         Vector2d delta = centerClosestLine.unit().scalarMult(k);
 
         return new Hit(delta, line.normal());

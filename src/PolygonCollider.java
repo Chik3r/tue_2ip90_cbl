@@ -1,5 +1,5 @@
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class PolygonCollider extends Collider {
     protected final ArrayList<Vector2d> origVertices;
@@ -103,5 +103,14 @@ public class PolygonCollider extends Collider {
         delta = new Vector2d(delta.x * overlap, delta.y * overlap);
 
         return new Hit(delta, overlapEdgeNormal);
+    }
+
+    @Override
+    protected void draw(GraphicsWrapper g) {
+        for (int i = 0; i < worldVertices.size(); i++) {
+            Vector2d v = worldVertices.get(i);
+            Vector2d v2 = worldVertices.get((i+1) % worldVertices.size());
+            g.drawLine((int) v.x, (int) v.y, (int) v2.x, (int) v2.y, Color.green);
+        }
     }
 }

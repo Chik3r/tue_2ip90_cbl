@@ -34,5 +34,5 @@ public abstract class Collider {
 
     protected abstract Hit isTouchingCircle(CircleCollider collider);
     protected abstract Hit isTouchingPolygon(PolygonCollider collider);
-    // TODO: Debug draw method
+    protected abstract void draw(GraphicsWrapper g);
 }

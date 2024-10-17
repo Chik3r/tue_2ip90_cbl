@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.awt.*;
 
 public class CircleCollider extends Collider {
     private final float radius;
@@ -58,6 +58,12 @@ public class CircleCollider extends Collider {
         }
 
         return hitInfo;
+    }
+
+    @Override
+    protected void draw(GraphicsWrapper g) {
+        Vector2d worldCenter = getWorldCenter();
+        g.drawOval((int) (worldCenter.x - radius), (int) (worldCenter.y - radius), (int) (radius*2), (int) (radius*2), Color.green);
     }
 
     private Hit isTouchingLine(Vector2d lineStart, Vector2d lineEnd) {

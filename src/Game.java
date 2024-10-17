@@ -10,17 +10,30 @@ public class Game implements Runnable {
     // Max number of times the physics can update between each render
     private static final int MAX_UPDATES_BETWEEN_RENDER = 1;
 
+    public static Game instance;
+
     private final ArrayList<Entity> entities = new ArrayList<>();
     JFrame frame;
     Rectangle frameBounds;
     BufferStrategy bufferStrategy;
     Thread gameLoopThread;
 
+    public Game() {
+        instance = this;
+    }
+
+    public void removeEntity(Entity entity) {
+        entities.remove(entity);
+    }
+
+    public ArrayList<Entity> getEntities() {
+        return entities;
+    }
+
     @Override
     public void run() {
         initializeDrawing();
-
-        entities.add(new ExampleEntity());
+        initializeEntities();
 
         gameLoopThread = new Thread(this::gameLoop);
         gameLoopThread.start();
@@ -85,6 +98,11 @@ public class Game implements Runnable {
         frameBounds.x = insets.left;
         frameBounds.height -= insets.top + insets.bottom;
         frameBounds.y = insets.top;
+    }
+
+    private void initializeEntities() {
+        entities.add(new Ball(51, 50));
+        entities.add(new CirclePeg(50, 500, 25, false));
     }
 
     private void draw(float deltaTime) {

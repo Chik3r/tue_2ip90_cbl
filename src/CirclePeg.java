@@ -11,15 +11,17 @@ public class CirclePeg extends Peg {
         this.radius = radius;
         this.orange = orange;
         this.beenHit = false;
-        //this.collider = new collider(x,y,radius)
+
+        Vector2d center = new Vector2d(radius, radius);
+        this.collider = new CircleCollider(center, pos, radius);
     }
 
     @Override
     public void draw(GraphicsWrapper g) {
-        Color colour = (orange) ? new Color(255, 153, 51) : Color.cyan; 
-        g.fillOval((int) pos.x, (int) pos.y, radius, radius, colour);
-        colour = (orange) ? Color.orange : Color.blue; 
-        g.fillOval((int) pos.x, (int) pos.y, radius * - 5, radius - 5, colour);
+        Color colour = (orange) ? new Color(255, 153, 51) : Color.blue; 
+        g.fillOval((int) pos.x, (int) pos.y, radius * 2, radius * 2, colour);
+        colour = (orange) ? Color.orange : Color.cyan; 
+        g.fillOval(((int) pos.x) + 10, ((int) pos.y) + 10, ((radius - 10) * 2), ((radius - 10) * 2), colour);
         if (beenHit) {
             // TODO: fancy particles :D
             // make it glowy

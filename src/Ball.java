@@ -10,7 +10,9 @@ public class Ball extends Entity {
     // TODO: test the perfect values for constants
     static final int RADIUS = 25; // RADIUS of the ball
     static final double GRAVITY = 980; // the amount velocity.y should increase every second
-    static final double STARTING_SPEED = 500; //the length of velocity when shooting ball
+    static final double STARTING_SPEED = 1000; //the length of velocity when shooting ball
+    static final double FRICTION = 0.99; // coefficiont of friction
+    static final double ELASTICITY = 0.8; // coefficient of restitution 
 
     private Vector2d pos; 
     private Vector2d velocity;
@@ -27,7 +29,7 @@ public class Ball extends Entity {
         this.pos = new Vector2d(x, y);
         // TODO: ball shooter should change this value to the vector
         // TODO: pointing from the center top of the screen to the end of the cannon
-        this.velocity = new Vector2d(0, -1).unit().scalarMult(STARTING_SPEED);
+        this.velocity = new Vector2d(1, 0).unit().scalarMult(STARTING_SPEED);
         this.collider = new CircleCollider(new Vector2d(RADIUS, RADIUS), RADIUS);
 
         try {
@@ -108,29 +110,24 @@ public class Ball extends Entity {
      */
     public void collisionCalc(Hit hit) {
         // puts ball back to before collision
-        System.out.println(hit.delta().x + " " + hit.delta().y + " " + hit.normal().x + " " + hit.normal().y);
 
         pos = pos.add(hit.delta());
-        collider.setWorldPos(pos);    
-
-        System.out.println(velocity);
+        collider.setWorldPos(pos);   
 
         // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)
         // (invard pointing) normal unit vector of the tangent
         Vector2d normalUnit = hit.normal().unit();
-        System.out.println(normalUnit);
         // dotp of velocity and unit vector * normal unit vector == parallel (to normal) component
         double dotProduct = velocity.dotp(normalUnit);
         Vector2d parallelComponent = normalUnit.scalarMult(dotProduct);
-        System.out.println(parallelComponent);
         // vecolity - parallel component == parallel (to tangent) component
         Vector2d perpendicularComponent = velocity.subtract(parallelComponent);
-        System.out.println(perpendicularComponent);
         // parallel (to tangent) - parallel (to normal) = reflected vector
         Vector2d reflectedVector = perpendicularComponent.subtract(parallelComponent);
-        System.out.println(reflectedVector);
         
-        velocity = reflectedVector;
+        velocity = reflectedVector.scalarMult(ELASTICITY);
+        velocity.x *= FRICTION;
+
 
         // in the case of a wall/rect that has a side parallel to the x/y axis
         // this is the same as just reversing the x on side and y on top collision

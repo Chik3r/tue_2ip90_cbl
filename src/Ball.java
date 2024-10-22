@@ -17,6 +17,7 @@ public class Ball extends Entity {
     private Vector2d pos; 
     private Vector2d velocity;
     private CircleCollider collider;
+    private double lastx;
 
     Image kees;
 
@@ -63,6 +64,7 @@ public class Ball extends Entity {
         updateVelocity(deltaTime);
         updatePos(deltaTime);
         collisionCheck();
+
     }
 
     /**
@@ -80,9 +82,11 @@ public class Ball extends Entity {
      */
     public void updatePos(float deltaTime) {
         //deltatime in seconds
+        lastx = pos.x;
         pos.x += velocity.x * (deltaTime / 1000);
         pos.y += velocity.y * (deltaTime / 1000);
-        collider.setWorldPos(pos);    
+        collider.setWorldPos(pos);
+        System.out.println(pos);
     }
 
     /**
@@ -133,5 +137,12 @@ public class Ball extends Entity {
         // this is the same as just reversing the x on side and y on top collision
 
         // of course this can be written better but this way its clearer for now
+    }
+
+    public boolean clearCheck() {
+        if (pos.y > Game.instance.frameBounds.getHeight()) {
+            Game.instance.removeEntity(this);
+        }
+        return pos.y > Game.instance.frameBounds.getHeight() || lastx == pos.x;
     }
 }

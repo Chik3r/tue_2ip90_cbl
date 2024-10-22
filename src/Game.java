@@ -26,6 +26,26 @@ public class Game implements Runnable {
         entities.remove(entity);
     }
 
+
+    public void clearEntities() {
+        Ball ball = null;
+        for (Entity entity : entities) {
+            if (entity instanceof Ball) {
+                ball = (Ball) entity;
+                break;
+            }
+        }
+        if (ball != null) {
+            if (ball.clearCheck()) {
+                for (int i = entities.size() - 1; i >= 0; i--) {
+                    if (entities.get(i) instanceof Peg) {
+                        ((Peg) entities.get(i)).clearing();
+                    }
+                }
+            }
+        }
+    }
+
     public ArrayList<Entity> getEntities() {
         return entities;
     }
@@ -106,6 +126,7 @@ public class Game implements Runnable {
         entities.add(new RectPeg(700, 50, 50, 500, false));
         entities.add(new RectPeg(50, 500, 700, 50, false));
         entities.add(new RectPeg(0, 50, 50, 500, false));
+        entities.add(new RectPeg(50, 700, 700, 50, false));
     }
 
     private void draw(float deltaTime) {
@@ -134,5 +155,7 @@ public class Game implements Runnable {
         for (Entity entity : entities) {
             entity.update(deltaTime);
         }
+        //needed because removing entities while looping over them to update is big nono
+        clearEntities();
     }
 }

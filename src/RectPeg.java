@@ -37,12 +37,17 @@ public class RectPeg extends Peg {
 
         //TODO: fix collider Vertices
         ArrayList<Vector2d> vertices = new ArrayList<Vector2d>();
-        vertices.add(pos);
-        vertices.add(new Vector2d(x + width, y));
-        vertices.add(new Vector2d(x + width, y + height));
-        vertices.add(new Vector2d(x, y + height));
-        
-        this.collider = new PolygonCollider(vertices);        
+        double tmpX = width / 2.0;
+        double tmpY = height / 2.0;
+        vertices.add(new Vector2d(-tmpX, -tmpY));
+        vertices.add(new Vector2d(tmpX, -tmpY));
+        vertices.add(new Vector2d(tmpX, tmpY));
+        vertices.add(new Vector2d(-tmpX, tmpY));
+
+        var col = new PolygonCollider(vertices);
+        col.setWorldPos(pos.add(new Vector2d(tmpX, tmpY)));
+        col.setAngle(angle);
+        this.collider = col;
     }
 
     @Override
@@ -55,6 +60,8 @@ public class RectPeg extends Peg {
             // TODO: fancy particles :D
             // make it glowy
         }
+
+        collider.draw(g);
     }
 
     // @Override

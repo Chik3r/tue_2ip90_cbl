@@ -8,12 +8,15 @@ import java.io.IOException;
  */
 public class Ball extends Entity {
     // TODO: test the perfect values for constants
-    static final int RADIUS = 25; // radius of the ball
+    static final int RADIUS = 25; // RADIUS of the ball
     static final double GRAVITY = 980; // the amount velocity.y should increase every second
-    static final double STARTING_SPEED = 1500; //the length of velocity when shooting ball
+    static final double STARTING_SPEED = 1000; //the length of velocity when shooting ball
+    static final double FRICTION = 0.99; // coefficiont of friction
+    static final double ELASTICITY = 0.8; // coefficient of restitution 
 
     private Vector2d pos; 
     private Vector2d velocity;
+    private CircleCollider collider;
 
     Image kees;
 
@@ -22,13 +25,20 @@ public class Ball extends Entity {
      * @param x x coordinate of the top left of the ball
      * @param y y coordinate of the top left of the ball
      */
-    public Ball(int x, int y) throws IOException {
+    public Ball(int x, int y)  {
         this.pos = new Vector2d(x, y);
         // TODO: ball shooter should change this value to the vector
         // TODO: pointing from the center top of the screen to the end of the cannon
-        this.velocity = new Vector2d(30, 1).unit().scalarMult(STARTING_SPEED);
+        this.velocity = new Vector2d(1, 0).unit().scalarMult(STARTING_SPEED);
+        this.collider = new CircleCollider(new Vector2d(RADIUS, RADIUS), RADIUS);
 
-        this.kees = ImageIO.read(new File("assets/kees_ball.png"));
+        try {
+            this.kees = ImageIO.read(new File("assets/kees_ball.png"));
+        } catch (IOException e) {
+            //TODO: REMOVE THIS
+            System.out.println("Nooooo you're pegging wrong :((((");
+        }
+
     }
 
     public Vector2d getPos() {
@@ -41,7 +51,7 @@ public class Ball extends Entity {
      */
     @Override
     public void draw(GraphicsWrapper g) {
-        g.drawImage(kees, (int) pos.x, (int) pos.y, RADIUS, RADIUS);
+        g.drawImage(kees, (int) pos.x, (int) pos.y, RADIUS * 2, RADIUS * 2);
     }
 
     /**
@@ -71,7 +81,8 @@ public class Ball extends Entity {
     public void updatePos(float deltaTime) {
         //deltatime in seconds
         pos.x += velocity.x * (deltaTime / 1000);
-        pos.y += velocity.y * (deltaTime / 1000);    
+        pos.y += velocity.y * (deltaTime / 1000);
+        collider.setWorldPos(pos);    
     }
 
     /**
@@ -79,6 +90,16 @@ public class Ball extends Entity {
      */
     public void collisionCheck() {
         // TODO: implement collision check
+        Hit hit;
+        for (Entity entity : Game.instance.getEntities()) {
+            if (entity instanceof Peg) {
+                hit = collider.isTouching(((Peg) entity).getCollider());
+                if (hit != null) {
+                    collisionCalc(hit);
+                    ((Peg) entity).gotHit();
+                }
+            }
+        }
         //check if the object collided with any entity or the side/top walls
         //if it did call create a Hit obj and call collisionCalc
     }
@@ -89,7 +110,9 @@ public class Ball extends Entity {
      */
     public void collisionCalc(Hit hit) {
         // puts ball back to before collision
-        pos = pos.subtract(hit.delta());
+
+        pos = pos.add(hit.delta());
+        collider.setWorldPos(pos);   
 
         // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)
         // (invard pointing) normal unit vector of the tangent
@@ -101,7 +124,10 @@ public class Ball extends Entity {
         Vector2d perpendicularComponent = velocity.subtract(parallelComponent);
         // parallel (to tangent) - parallel (to normal) = reflected vector
         Vector2d reflectedVector = perpendicularComponent.subtract(parallelComponent);
-        velocity = reflectedVector;
+        
+        velocity = reflectedVector.scalarMult(ELASTICITY);
+        velocity.x *= FRICTION;
+
 
         // in the case of a wall/rect that has a side parallel to the x/y axis
         // this is the same as just reversing the x on side and y on top collision

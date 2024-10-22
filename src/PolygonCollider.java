@@ -6,6 +6,8 @@ public class PolygonCollider extends Collider {
     protected final ArrayList<Vector2d> worldVertices;
     protected final ArrayList<Vector2d> normals;
 
+    private double angle;
+
     public PolygonCollider(ArrayList<Vector2d> vertices) {
         this(new Vector2d(0, 0), vertices);
     }
@@ -41,11 +43,12 @@ public class PolygonCollider extends Collider {
     @Override
     public void setWorldPos(Vector2d worldPos) {
         super.setWorldPos(worldPos);
+        recalculateWorldVertices();
+    }
 
-        worldVertices.clear();
-        for (Vector2d v : origVertices) {
-            worldVertices.add(v.add(worldPos));
-        }
+    public void setAngle(double angle) {
+        this.angle = angle;
+        recalculateWorldVertices();
     }
 
     @Override
@@ -111,6 +114,14 @@ public class PolygonCollider extends Collider {
             Vector2d v = worldVertices.get(i);
             Vector2d v2 = worldVertices.get((i+1) % worldVertices.size());
             g.drawLine((int) v.x, (int) v.y, (int) v2.x, (int) v2.y, Color.green);
+        }
+    }
+
+    private void recalculateWorldVertices() {
+        worldVertices.clear();
+        for (Vector2d v : origVertices) {
+            var finalV = v.rotate(angle).add(worldPos);
+            worldVertices.add(finalV);
         }
     }
 }

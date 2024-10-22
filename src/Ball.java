@@ -15,6 +15,7 @@ public class Ball extends Entity {
     static final double ELASTICITY = 0.8; // coefficient of restitution 
 
     private Vector2d pos; 
+    private Vector2d lastpos;
     private Vector2d velocity;
     private CircleCollider collider;
 
@@ -71,6 +72,7 @@ public class Ball extends Entity {
         updateVelocity(deltaTime);
         updatePos(deltaTime);
         collisionCheck();
+
     }
 
     /**
@@ -88,9 +90,10 @@ public class Ball extends Entity {
      */
     public void updatePos(float deltaTime) {
         //deltatime in seconds
+        lastpos = new Vector2d(pos.x, pos.y);
         pos.x += velocity.x * (deltaTime / 1000);
         pos.y += velocity.y * (deltaTime / 1000);
-        collider.setWorldPos(pos);    
+        collider.setWorldPos(pos);
     }
 
     /**
@@ -141,5 +144,14 @@ public class Ball extends Entity {
         // this is the same as just reversing the x on side and y on top collision
 
         // of course this can be written better but this way its clearer for now
+    }
+
+    public boolean clearCheck() {
+        if (pos.y > Game.instance.frameBounds.getHeight()) {
+            Game.instance.removeEntity(this);
+        }
+        //TODO: This *may* result in a small bug when an upwards moving ball reaches the apex of its movement
+        // and clears everything because it moved too little that update
+        return pos.y > Game.instance.frameBounds.getHeight() || lastpos.subtract(pos).length() < 0.001;
     }
 }

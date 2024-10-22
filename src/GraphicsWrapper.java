@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class GraphicsWrapper {
     private final Graphics2D graphics;
@@ -8,6 +9,8 @@ public class GraphicsWrapper {
         this.graphics = graphics;
         this.bounds = bounds;
     }
+
+    
 
     public void setColor(Color color) {
         graphics.setColor(color);
@@ -38,6 +41,20 @@ public class GraphicsWrapper {
     public void fillRect(int x, int y, int width, int height, Color color) {
         setColor(color);
         fillRect(x, y, width, height);
+    }
+
+    public void fillRotatedRect(int x, int y, int width, int height, double angle) {
+        AffineTransform aft = new AffineTransform();
+        Rectangle rect = new Rectangle(x + bounds.x, y + bounds.y, width, height);
+        aft.rotate(angle, rect.getCenterX(), rect.getCenterY());
+
+        var newShape = aft.createTransformedShape(rect);
+        graphics.fill(newShape);
+    }
+
+    public void fillRotatedRect(int x, int y, int width, int height, double angle, Color color) {
+        setColor(color);
+        fillRotatedRect(x, y, width, height, angle);
     }
 
     public void drawLine(int x1, int y1, int x2, int y2, Color color) {

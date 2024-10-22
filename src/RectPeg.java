@@ -60,8 +60,6 @@ public class RectPeg extends Peg {
             // TODO: fancy particles :D
             // make it glowy
         }
-
-        collider.draw(g);
     }
 
     // @Override

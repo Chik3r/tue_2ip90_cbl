@@ -65,4 +65,11 @@ public class GraphicsWrapper {
     public void drawImage(Image image, int x, int y, int width, int height) {
         graphics.drawImage(image, x + bounds.x, y + bounds.y, width, height, null);
     }
+
+    public void drawImage(Image image, int x, int y, int width, int height, double radians) {
+        AffineTransform aft = new AffineTransform();
+        aft.translate(x + bounds.x, y + bounds.y);
+        aft.rotate(radians, image.getWidth(null) / 2.0, image.getHeight(null) / 2.0);
+        graphics.drawImage(image, aft, null);
+    }
 }

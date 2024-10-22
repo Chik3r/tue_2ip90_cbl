@@ -45,6 +45,14 @@ public class Ball extends Entity {
         return pos;
     }
 
+    public void setCenter(Vector2d center) {
+        this.pos = center.subtract(new Vector2d(RADIUS, RADIUS));
+    }
+
+    public void setVelocity(Vector2d velocity) {
+        this.velocity = velocity;
+    }
+
     /**
      * Draws the ball onto the canvas.
      * Currently draws Kees because fnuyy.

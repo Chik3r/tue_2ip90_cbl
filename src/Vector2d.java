@@ -60,6 +60,10 @@ public class Vector2d {
         return (x - vector.x) * (x - vector.x) + (y - vector.y) * (y - vector.y);
     }
 
+    public Vector2d rotate(double radians) {
+        return new Vector2d(x * Math.cos(radians) - y * Math.sin(radians), x * Math.sin(radians) + y * Math.cos(radians));
+    }
+
     @Override
     public String toString() {
         return "Vector2d{" +

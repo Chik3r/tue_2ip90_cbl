@@ -14,8 +14,6 @@ public class InputManager implements KeyEventDispatcher {
             pressedKeys.remove(e.getKeyCode());
         }
 
-        System.out.printf("%d!!! - being pegged by %d%n", eventID, e.getKeyCode());
-
         return false;
     }
 

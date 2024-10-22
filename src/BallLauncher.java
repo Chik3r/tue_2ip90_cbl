@@ -44,17 +44,14 @@ public class BallLauncher extends Entity {
         angle = Math.max(MIN_ANGLE, Math.min(angle, MAX_ANGLE));
 
         if (Game.instance.inputManager.isPressed(KeyEvent.VK_SPACE)) {
-            System.out.println("Launching ball with angle: " + angle);
-
-            // TODO: Only launch a ball if the ball is not active
-            if (false) {
-                return;
-            }
-
             // Get the ball entity
             Ball ball = (Ball) Game.instance.getEntities().stream()
                     .filter(x -> x instanceof Ball)
                     .findFirst().get();
+
+            if (ball.getAlive()) {
+                return;
+            }
 
             // Calculate launch vector
             Vector2d launch = new Vector2d(1, 0).rotate(angle);
@@ -62,6 +59,7 @@ public class BallLauncher extends Entity {
 
             ball.setCenter(launchOrigin);
             ball.setVelocity(launch.scalarMult(LAUNCH_SPEED));
+            ball.setAlive(true);
         }
     }
 }

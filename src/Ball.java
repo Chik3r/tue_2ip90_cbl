@@ -10,14 +10,14 @@ public class Ball extends Entity {
     // TODO: test the perfect values for constants
     static final int RADIUS = 25; // RADIUS of the ball
     static final double GRAVITY = 980; // the amount velocity.y should increase every second
-    static final double STARTING_SPEED = 1000; //the length of velocity when shooting ball
     static final double FRICTION = 0.99; // coefficiont of friction
     static final double ELASTICITY = 0.8; // coefficient of restitution 
 
-    private Vector2d pos; 
-    private Vector2d lastpos;
+    private final CircleCollider collider;
+    private Vector2d pos;
+    private Vector2d lastPos;
     private Vector2d velocity;
-    private CircleCollider collider;
+    private boolean isAlive;
 
     Image kees;
 
@@ -28,9 +28,10 @@ public class Ball extends Entity {
      */
     public Ball(int x, int y)  {
         this.pos = new Vector2d(x, y);
+        this.lastPos = pos;
         // TODO: ball shooter should change this value to the vector
         // TODO: pointing from the center top of the screen to the end of the cannon
-        this.velocity = new Vector2d(1, 0).unit().scalarMult(STARTING_SPEED);
+        this.velocity = new Vector2d(0, 0);
         this.collider = new CircleCollider(new Vector2d(RADIUS, RADIUS), RADIUS);
 
         try {
@@ -54,12 +55,24 @@ public class Ball extends Entity {
         this.velocity = velocity;
     }
 
+    public boolean getAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.isAlive = alive;
+    }
+
     /**
      * Draws the ball onto the canvas.
      * Currently draws Kees because fnuyy.
      */
     @Override
     public void draw(GraphicsWrapper g) {
+        if (!getAlive()) {
+            return;
+        }
+
         g.drawImage(kees, (int) pos.x, (int) pos.y, RADIUS * 2, RADIUS * 2);
     }
 
@@ -69,10 +82,13 @@ public class Ball extends Entity {
      */
     @Override
     public void update(float deltaTime) {
+        if (!getAlive()) {
+            return;
+        }
+
         updateVelocity(deltaTime);
         updatePos(deltaTime);
         collisionCheck();
-
     }
 
     /**
@@ -90,7 +106,7 @@ public class Ball extends Entity {
      */
     public void updatePos(float deltaTime) {
         //deltatime in seconds
-        lastpos = new Vector2d(pos.x, pos.y);
+        lastPos = new Vector2d(pos.x, pos.y);
         pos.x += velocity.x * (deltaTime / 1000);
         pos.y += velocity.y * (deltaTime / 1000);
         collider.setWorldPos(pos);
@@ -148,10 +164,10 @@ public class Ball extends Entity {
 
     public boolean clearCheck() {
         if (pos.y > Game.instance.frameBounds.getHeight()) {
-            Game.instance.removeEntity(this);
+            setAlive(false);
         }
         //TODO: This *may* result in a small bug when an upwards moving ball reaches the apex of its movement
         // and clears everything because it moved too little that update
-        return pos.y > Game.instance.frameBounds.getHeight() || lastpos.subtract(pos).length() < 0.001;
+        return pos.y > Game.instance.frameBounds.getHeight() || lastPos.subtract(pos).length() < 0.001;
     }
 }

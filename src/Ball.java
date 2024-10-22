@@ -15,9 +15,9 @@ public class Ball extends Entity {
     static final double ELASTICITY = 0.8; // coefficient of restitution 
 
     private Vector2d pos; 
+    private Vector2d lastpos;
     private Vector2d velocity;
     private CircleCollider collider;
-    private double lastx;
 
     Image kees;
 
@@ -82,11 +82,10 @@ public class Ball extends Entity {
      */
     public void updatePos(float deltaTime) {
         //deltatime in seconds
-        lastx = pos.x;
+        lastpos = new Vector2d(pos.x, pos.y);
         pos.x += velocity.x * (deltaTime / 1000);
         pos.y += velocity.y * (deltaTime / 1000);
         collider.setWorldPos(pos);
-        System.out.println(pos);
     }
 
     /**
@@ -143,6 +142,8 @@ public class Ball extends Entity {
         if (pos.y > Game.instance.frameBounds.getHeight()) {
             Game.instance.removeEntity(this);
         }
-        return pos.y > Game.instance.frameBounds.getHeight() || lastx == pos.x;
+        //TODO: This *may* result in a small bug when an upwards moving ball reaches the apex of its movement
+        // and clears everything because it moved too little that update
+        return pos.y > Game.instance.frameBounds.getHeight() || lastpos.subtract(pos).length() < 0.001;
     }
 }

@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-public class BorderCollider extends Entity{
+public class BorderCollider extends Entity {
     private final int WIDTH = 50;
 
     private PolygonCollider colliderL;

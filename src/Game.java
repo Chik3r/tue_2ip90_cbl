@@ -129,9 +129,10 @@ public class Game implements Runnable {
         entities.add(new Ball(60, 50));
         entities.add(new CirclePeg(50, 450, 25, false));
         entities.add(new RectPeg(700, 50, 50, 500, false));
-        entities.add(new RectPeg(50, 500, 700, 50, false, Math.PI/4));
+        entities.add(new RectPeg(50, 500, 700, 50, false, Math.PI / 4));
         entities.add(new RectPeg(0, 50, 50, 500, false));
         entities.add(new RectPeg(50, 700, 700, 50, false));
+        entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
     }
 
     private void draw(float deltaTime) {

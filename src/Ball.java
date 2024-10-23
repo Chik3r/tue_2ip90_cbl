@@ -89,7 +89,6 @@ public class Ball extends Entity {
      * Checks if the ball collided with anything after moving.
      */
     public void collisionCheck() {
-        // TODO: implement collision check
         Hit hit;
         for (Entity entity : Game.instance.getEntities()) {
             if (entity instanceof Peg) {
@@ -97,6 +96,13 @@ public class Ball extends Entity {
                 if (hit != null) {
                     collisionCalc(hit);
                     ((Peg) entity).gotHit();
+                }
+            } else if (entity instanceof BorderCollider) {
+                for (PolygonCollider bordercollider : ((BorderCollider) entity).getColliders()) {
+                    hit = collider.isTouching(bordercollider);
+                    if (hit != null) {
+                        collisionCalc(hit);
+                    }
                 }
             }
         }

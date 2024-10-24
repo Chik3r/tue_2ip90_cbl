@@ -64,8 +64,13 @@ public class Vector2d {
         return new Vector2d(x * Math.cos(radians) - y * Math.sin(radians), x * Math.sin(radians) + y * Math.cos(radians));
     }
 
+    public double angle(Vector2d vector) {
+        int sign = y - vector.y < 0 ? -1 : 1;
+        return sign * Math.acos(dotp(vector) / (length() * vector.length()));
+    }
+
     public double angle() {
-        return Math.atan(x / y);
+        return angle(new Vector2d(1, 0));
     }
 
     @Override

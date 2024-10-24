@@ -64,6 +64,10 @@ public class Vector2d {
         return new Vector2d(x * Math.cos(radians) - y * Math.sin(radians), x * Math.sin(radians) + y * Math.cos(radians));
     }
 
+    public double angle() {
+        return Math.atan(x / y);
+    }
+
     @Override
     public String toString() {
         return "Vector2d{" +

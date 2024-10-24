@@ -107,6 +107,7 @@ public class Ball extends Entity {
     public void updatePos(float deltaTime) {
         //deltatime in seconds
         lastPos = new Vector2d(pos.x, pos.y);
+        collider.setOldPos(lastPos);
         pos.x += velocity.x * (deltaTime / 1000);
         pos.y += velocity.y * (deltaTime / 1000);
         collider.setWorldPos(pos);
@@ -174,6 +175,6 @@ public class Ball extends Entity {
         }
         //TODO: This *may* result in a small bug when an upwards moving ball reaches the apex of its movement
         // and clears everything because it moved too little that update
-        return pos.y > Game.instance.frameBounds.getHeight() || lastPos.subtract(pos).length() < 0.001;
+        return pos.y > Game.instance.frameBounds.getHeight() || lastPos.subtract(pos).length() < 0.000001;
     }
 }

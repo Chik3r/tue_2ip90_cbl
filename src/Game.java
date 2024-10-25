@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 public class Game implements Runnable {
     private static final int FRAMES_PER_SECOND = 60;
@@ -17,11 +20,18 @@ public class Game implements Runnable {
     Rectangle frameBounds;
     BufferStrategy bufferStrategy;
     Thread gameLoopThread;
+    Image background;
 
     public InputManager inputManager = new InputManager();
 
     public Game() {
         instance = this;
+        try {
+            this.background = ImageIO.read(new File("levels/Danfy/Backgr2.png"));
+        } catch (IOException e) {
+            //TODO: REMOVE THIS
+            System.out.println("Nooooo you're pegging wrong 3 :((((");
+        }
     }
 
     public void removeEntity(Entity entity) {
@@ -74,9 +84,6 @@ public class Game implements Runnable {
                 System.out.println(frameCount / ((System.currentTimeMillis() - fpsStartTime) / 1000d));
             }
 
-            // Input logic
-            // ...
-
             // Frame rate
             long now = System.nanoTime();
             float elapsedMillis = (now - lastUpdateTime) / 1_000_000.0f;
@@ -126,13 +133,14 @@ public class Game implements Runnable {
 
     private void initializeEntities() {
         entities.add(new BallLauncher(frameBounds.width));
-        entities.add(new Ball(60, 50));
-        entities.add(new CirclePeg(50, 450, 25, false));
-        entities.add(new RectPeg(700, 50, 50, 500, false));
-        entities.add(new RectPeg(50, 500, 700, 50, false, Math.PI / 4));
-        entities.add(new RectPeg(0, 50, 50, 500, false));
-        entities.add(new RectPeg(50, 700, 700, 50, false));
-        entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
+        entities.add(new Ball(0, 0));
+        // entities.add(new CirclePeg(50, 450, 25, false));
+        // entities.add(new RectPeg(700, 50, 50, 500, false));
+        // entities.add(new RectPeg(50, 500, 700, 50, false, Math.PI / 4));
+        // entities.add(new RectPeg(600, 500, 5, 350, 50, false));
+        // entities.add(new RectPeg(0, 50, 50, 500, false));
+        // entities.add(new RectPeg(50, 700, 700, 50, false));
+        // entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
     }
 
     private void draw(float deltaTime) {
@@ -145,6 +153,9 @@ public class Game implements Runnable {
                 // Clear frame
                 g.setColor(Color.white);
                 g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+
+                // Draw Backgr
+                wrapper.drawImage(background, 0, 0, (int) frameBounds.getWidth(), (int) frameBounds.getHeight());
 
                 // TODO: Depth
                 for (Entity entity : entities) {

@@ -7,7 +7,7 @@ import java.io.IOException;
 public class BallLauncher extends Entity {
     // PI / 5s / 1000ms = x rad / ms
     private static final double ROTATION_SPEED = Math.PI / 2 / 1000;
-    private static final double LAUNCH_SPEED = 1000;
+    private static final double LAUNCH_SPEED = 700;
     public static final double MIN_ANGLE = 0;
     public static final double MAX_ANGLE = Math.PI;
     Vector2d center;

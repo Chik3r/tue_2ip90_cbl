@@ -5,14 +5,20 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 
 public class OptionsBar {
-    public JPanel options;
     public Entity lastEntity;
     private long lastUpdateTime;
     private static final long TIME_BETWEEN_PLACING = 1_000_000_000 / 2;
     private static final long TIME_BETWEEN_CHANGES = 1_000_000_000 / 20;
+    private String baseText;
+    private String displayText;
 
-    public OptionsBar() {
+    public Vector2d pos;
+
+    public OptionsBar(Rectangle frameBounds) {
+        pos = new Vector2d(frameBounds.getWidth()/2, frameBounds.y);
         lastUpdateTime = System.nanoTime();
+        baseText = "R - Rectangle Brush\nC - Circle Brush\nE - Eraser\nS - Save";
+        displayText = baseText;
     }
 
     public void createRect(Boolean placed) {
@@ -55,8 +61,9 @@ public class OptionsBar {
         LevelEditor.instance.saveLevel();
     }
 
-    public void draw(Graphics2D g) {
-        // options.repaint(0);
+    public void draw(GraphicsWrapper g, Font font) {
+        g.setColor(Color.BLACK);
+        g.drawString(displayText, (int) pos.x, (int) pos.y, font);
     }
 
     public void erase() {
@@ -78,6 +85,16 @@ public class OptionsBar {
         }
     }
 
+    private String changeText(Entity entity) {
+        String str = 
+        "\nPos:    " + ((Peg) entity).pos.x + " " + ((Peg) entity).pos.y + 
+        "\nWidth:  " + (entity instanceof CirclePeg ? ((CirclePeg) entity).radius : ((RectPeg) entity).width) +
+        "\nHeight: " + (entity instanceof CirclePeg ? ((CirclePeg) entity).radius : ((RectPeg) entity).height) +
+        "\nAngle:  " + ((entity instanceof CirclePeg ? "" : Math.toDegrees(((RectPeg) entity).angle))) +
+        "\nOrange: " + ((Peg) entity).orange;
+
+        return baseText + str;
+    }
     /**
      * NUM 4 | 6 - GROW | SHRINK HEIHGT/RADIUS
      * NUM 1 | 3 - GROW | SHRINK WIDTH/RADIUS
@@ -85,7 +102,7 @@ public class OptionsBar {
      * 
      * R - RECTANGLE BRUSH
      * C - CIRCLE BRUSH
-     * BACKSPACE - ERASER
+     * E - ERASER
      * 
      * ARROW KEYS - PERCISION MOVEMENT
      * 
@@ -105,7 +122,7 @@ public class OptionsBar {
         if (manager.isPressed(KeyEvent.VK_C)) {
             createCirc(false);
         }
-        if (manager.isPressed(KeyEvent.VK_BACK_SPACE)) {
+        if (manager.isPressed(KeyEvent.VK_E)) {
             createEraser(false);
         }
         
@@ -180,6 +197,10 @@ public class OptionsBar {
                     erase();
                 }
             }
+            displayText = changeText(lastEntity);
+        }
+        if (manager.isPressed(KeyEvent.VK_S)) {
+            saveLevel();
         }
     }
 }

@@ -26,7 +26,6 @@ public class CirclePeg extends Peg {
             // TODO: fancy particles :D
             // make it glowy
         }
-        collider.draw(g);
     }
 
     @Override

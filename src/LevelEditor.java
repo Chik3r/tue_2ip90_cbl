@@ -151,28 +151,28 @@ public class LevelEditor implements Runnable {
         while (scanner.hasNextLine()) {
             String[] line = scanner.nextLine().split(" ");
             if (line[0].equals("c")) {
-                int x = stringtoint(line[1]);
-                int y = stringtoint(line[2]);
-                int rad = stringtoint(line[3]);
+                int x = Integer.parseInt(line[1]);
+                int y = Integer.parseInt(line[2]);
+                int rad = Integer.parseInt(line[3]);
                 Boolean orange = Boolean.parseBoolean(line[4]);
                 entities.add(new CirclePeg(x, y, rad, orange));
             } else if (line[0].equals("r")) {
-                int a = stringtoint(line[1]);
-                int b = stringtoint(line[2]);
-                int c = stringtoint(line[3]);
-                int d = stringtoint(line[4]);
+                int a = Integer.parseInt(line[1]);
+                int b = Integer.parseInt(line[2]);
+                int c = Integer.parseInt(line[3]);
+                int d = Integer.parseInt(line[4]);
                 if (line.length == 6) {
                     Boolean orange = Boolean.parseBoolean(line[5]);
                     entities.add(new RectPeg(a, b, c, d, orange));
                 } else if (line.length == 7) {
                     try {
-                        int e = stringtoint(line[5]);
+                        int e = Integer.parseInt(line[5]);
                         Boolean orange = line[6].equals("true");
                         entities.add(new RectPeg(a, b, c, d, e, orange));
                     } catch (NumberFormatException e) {
                         Boolean orange = line[5].equals("true");
                         double angle = Double.parseDouble(line[6]);
-                        entities.add(new RectPeg(b, c, d, d, orange, angle));
+                        entities.add(new RectPeg(a, b, c, d, orange, angle));
                     }
                 
                 }
@@ -180,15 +180,6 @@ public class LevelEditor implements Runnable {
         }
 
         // entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
-    }
-
-    private int stringtoint(String str) {
-        String[] nums = str.split("\\+");
-        int number = 0;
-        for (String num : nums) {
-            number += Integer.parseInt(num);
-        }
-        return number;
     }
 
     private void draw(float deltaTime) {
@@ -245,7 +236,7 @@ public class LevelEditor implements Runnable {
                     var pos = ((CirclePeg) entity).pos;
                     var radius = ((CirclePeg) entity).radius;
                     var orange = ((CirclePeg) entity).orange;
-                    String line = pos.x + " " + pos.y + " " + radius + " " + orange;
+                    String line = "c " + (int) pos.x + " " + (int) pos.y + " " + (int) radius + " " + orange;
                     fWriter.write(line + "\n");
                 } else if (entity instanceof RectPeg) {
                     var pos = ((RectPeg) entity).pos;
@@ -253,7 +244,7 @@ public class LevelEditor implements Runnable {
                     var height = ((RectPeg) entity).height;
                     var orange = ((RectPeg) entity).orange;
                     var angle = ((RectPeg) entity).angle;
-                    String line = pos.x + " " + pos.y + " " + width + " " + height + " " + orange + " " + angle;
+                    String line = "r " + (int) pos.x + " " + (int) pos.y + " " + (int) width + " " + (int) height + " " + orange + " " + angle;
                     fWriter.write(line + "\n");
                 }
             }

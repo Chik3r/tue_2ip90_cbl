@@ -76,6 +76,7 @@ public class OptionsBar {
             if (entity instanceof Peg && !entity.equals(lastEntity)) {
                 Hit hit = ((Peg)lastEntity).getCollider().isTouching(((Peg) entity).getCollider());
                 if (hit != null) {
+                    prevPos = ((Peg) entity).pos;
                     ((Peg) entity).gotHit();
                 }
             }
@@ -103,7 +104,7 @@ public class OptionsBar {
         "\nOrange: " + ((Peg) entity).orange +
         "\n\nPos: " + ((Peg) entity).pos.x + " " + ((Peg) entity).pos.y + 
         "\nRel Pos: " + ((Peg) entity).pos.subtract(prevPos).x + " " + ((Peg) entity).pos.subtract(prevPos).y +
-        "\nRel Len: " + ((Peg) entity).pos.subtract(prevPos).length();
+        "\nDistance: " + ((Peg) entity).pos.subtract(prevPos).length();
 
         return baseText + str;
     }

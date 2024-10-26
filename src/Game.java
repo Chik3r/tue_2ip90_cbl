@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.util.*;
@@ -21,7 +20,6 @@ public class Game implements Runnable {
     BufferStrategy bufferStrategy;
     Thread gameLoopThread;
 
-
     Image background;
 
     public InputManager inputManager = new InputManager();
@@ -33,7 +31,6 @@ public class Game implements Runnable {
     public void removeEntity(Entity entity) {
         entities.remove(entity);
     }
-
 
     public void clearEntities() {
         Ball ball = null;
@@ -112,12 +109,12 @@ public class Game implements Runnable {
 
     private void initializeLevel(String level) {
         try {
-            this.background = ImageIO.read(new File("levels/" + level + "/Backgr2.png"));
+            this.background = ImageIO.read(new File("levels/" + level + "/Backgr.png"));
         } catch (IOException e) {
             //TODO: REMOVE THIS
             System.out.println("Nooooo you're pegging wrong 3 :((((");
         }
-        File instructions = new File("levels\\Danfy\\Danfy.txt") ;
+        File instructions = new File("levels\\" + level + "\\" + level + ".txt");
         Scanner scanner = null;
         try {
             scanner = new Scanner(instructions);
@@ -161,22 +158,22 @@ public class Game implements Runnable {
         while (scanner.hasNextLine()) {
             String[] line = scanner.nextLine().split(" ");
             if (line[0].equals("c")) {
-                int x = stringtoint(line[1]);
-                int y = stringtoint(line[2]);
-                int rad = stringtoint(line[3]);
+                int x = Integer.parseInt(line[1]);
+                int y = Integer.parseInt(line[2]);
+                int rad = Integer.parseInt(line[3]);
                 Boolean orange = Boolean.parseBoolean(line[4]);
                 entities.add(new CirclePeg(x, y, rad, orange));
             } else if (line[0].equals("r")) {
-                int a = stringtoint(line[1]);
-                int b = stringtoint(line[2]);
-                int c = stringtoint(line[3]);
-                int d = stringtoint(line[4]);
+                int a = Integer.parseInt(line[1]);
+                int b = Integer.parseInt(line[2]);
+                int c = Integer.parseInt(line[3]);
+                int d = Integer.parseInt(line[4]);
                 if (line.length == 6) {
                     Boolean orange = Boolean.parseBoolean(line[5]);
                     entities.add(new RectPeg(a, b, c, d, orange));
                 } else if (line.length == 7) {
                     try {
-                        int e = stringtoint(line[5]);
+                        int e = Integer.parseInt(line[5]);
                         Boolean orange = line[6].equals("true");
                         entities.add(new RectPeg(a, b, c, d, e, orange));
                     } catch (NumberFormatException e) {
@@ -184,31 +181,11 @@ public class Game implements Runnable {
                         double angle = Double.parseDouble(line[6]);
                         entities.add(new RectPeg(a, b, c, d, orange, angle));
                     }
-                
                 }
             }
         }
 
-        // entities.add(new RectPeg(31, 266, 20, 30, false));
-        // entities.add(new RectPeg(31, 297, 20, 30, true));
-        // entities.add(new RectPeg(52, 266, 30, 20, false));
-        // entities.add(new CirclePeg(83, 266, 10, false));
-        // entities.add(new RectPeg(110, 266, 140, 276, 20, false));
-        // entities.add(new RectPeg(145, 266, 30, 20, true, -Math.PI/4));
-
-
-        // entities.add(new CirclePeg(50, 450, 25, false));
-        // entities.add(new RectPeg(700, 50, 50, 500, false));
-        // entities.add(new RectPeg(50, 500, 700, 50, false, Math.PI / 4));
-        // entities.add(new RectPeg(600, 500, 5, 350, 50, false));
-        // entities.add(new RectPeg(0, 50, 50, 500, false));
-        // entities.add(new RectPeg(50, 700, 700, 50, false));
-
         entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
-    }
-
-    private int stringtoint(String str) {
-        return (int) Float.parseFloat(str);
     }
 
     private void draw(float deltaTime) {

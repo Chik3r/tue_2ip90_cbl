@@ -26,6 +26,19 @@ public class RectPeg extends Peg {
         this.collider = new PolygonCollider(vertices);
     }
 
+    public RectPeg(int x1, int y1, int x2, int y2, int height, boolean orange) {
+        this(x1, y1,
+             (int) new Vector2d(x1, y1).subtract(new Vector2d(x2, y2)).length(), 
+             height, 
+             orange,
+             new Vector2d(x2, y2).subtract(new Vector2d(x1, y1)).angle());
+
+        var vertex1 = ((PolygonCollider) collider).getWorldVertices().get(0);
+        pos = pos.add(pos.subtract(vertex1));
+        collider.setWorldPos(collider.getWorldCenter().add(pos.subtract(vertex1).scalarMult(0.5)));
+        
+    }
+
     public RectPeg(int x, int y, int width, int height, boolean orange, double angle) {
         this.pos = new Vector2d(x, y);
         this.width = width;
@@ -35,7 +48,6 @@ public class RectPeg extends Peg {
         this.angle = angle;
 
 
-        //TODO: fix collider Vertices
         ArrayList<Vector2d> vertices = new ArrayList<Vector2d>();
         double tmpX = width / 2.0;
         double tmpY = height / 2.0;

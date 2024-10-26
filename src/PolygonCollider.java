@@ -46,6 +46,10 @@ public class PolygonCollider extends Collider {
         recalculateWorldVertices();
     }
 
+    public ArrayList<Vector2d> getWorldVertices() {
+        return worldVertices;
+    }
+
     public void setAngle(double angle) {
         this.angle = angle;
         recalculateWorldVertices();

@@ -79,9 +79,14 @@ public class OptionsBar {
     }
 
     private void mouseSnap() {
-        Point2D mousePos = MouseInfo.getPointerInfo().getLocation();
+        Point mousePos = MouseInfo.getPointerInfo().getLocation();
+        JFrame frame = LevelEditor.instance.getFrame();
+        SwingUtilities.convertPointFromScreen(mousePos, frame);
         if (lastEntity instanceof Peg) {
-            ((Peg) lastEntity).pos = new Vector2d((int) mousePos.getX(), (int) mousePos.getY());
+            // var entityCenter = ((Peg) lastEntity).getCollider().getWorldCenter().subtract(((Peg) lastEntity).pos);
+            // ((Peg) lastEntity).pos = new Vector2d((int) mousePos.getX() - frame.getInsets().left - entityCenter.x, (int) mousePos.getY() - frame.getInsets().top - entityCenter.y);
+            ((Peg) lastEntity).pos = new Vector2d((int) mousePos.getX() - frame.getInsets().left, (int) mousePos.getY() - frame.getInsets().top);
+            System.out.println(((Peg) lastEntity).pos);
             ((Peg) lastEntity).getCollider().setWorldPos(((Peg) lastEntity).pos);
         }
     }

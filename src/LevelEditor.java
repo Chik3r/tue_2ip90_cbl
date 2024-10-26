@@ -45,6 +45,10 @@ public class LevelEditor implements Runnable {
         return entities;
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
     @Override
     public void run() {
 

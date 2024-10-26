@@ -7,43 +7,12 @@ import java.awt.geom.Point2D;
 public class OptionsBar {
     public JPanel options;
     public Entity lastEntity;
-    private boolean entityPlaced;
+    private long lastUpdateTime;
+    private static final long TIME_BETWEEN_PLACING = 1_000_000_000 / 2;
+    private static final long TIME_BETWEEN_CHANGES = 1_000_000_000 / 20;
 
-    private static final double ROTATION_SPEED = Math.PI / 2 / 1000;
-    public static final double MIN_ANGLE = 0;
-    public static final double MAX_ANGLE = Math.PI;
-
-    public OptionsBar(JFrame frame) {
-        options = new JPanel();
-        options.setBounds(0, 0, 100, 200);
-        options.setOpaque(false);
-
-        JButton r = new JButton("rectangle");
-        r.addActionListener(e -> createRect(false));
-        JButton c = new JButton("circle");
-        c.addActionListener(e -> createCirc(false));
-        JButton eraser = new JButton("eraser");
-        eraser.addActionListener(e -> createEraser(false));
-        JButton save = new JButton("save");
-        save.addActionListener(e -> saveLevel());
-
-        JLabel pos = new JLabel("pos: ");
-        JLabel radius = new JLabel("radius: ");
-        JLabel width = new JLabel("width: ");
-        JLabel height = new JLabel("height: ");
-        JLabel angle = new JLabel("angle: ");
-        JLabel orange = new JLabel("orange: ");
-
-        options.add(r);
-        options.add(c);
-        options.add(eraser);
-        options.add(pos);
-        options.add(radius);
-        options.add(width);
-        options.add(height);
-        options.add(angle);
-        options.add(orange);
-        options.add(save);
+    public OptionsBar() {
+        lastUpdateTime = System.nanoTime();
     }
 
     public void createRect(Boolean placed) {
@@ -129,6 +98,7 @@ public class OptionsBar {
      */
     public void update(float deltaTime, Boolean placing) {
         var manager = LevelEditor.instance.inputManager;
+        long now = System.nanoTime();
         if (manager.isPressed(KeyEvent.VK_R)) {
             createRect(false);
         }
@@ -141,59 +111,70 @@ public class OptionsBar {
         
         if (placing) {
             mouseSnap();
-            if (lastEntity instanceof CirclePeg) {
-                var circEntity = ((CirclePeg) lastEntity);
-                // grow and shrink radius
-                if (manager.isPressed(KeyEvent.VK_NUMPAD6) || manager.isPressed(KeyEvent.VK_NUMPAD3)) {
-                    circEntity.radius += 1;
+            if (now - lastUpdateTime > TIME_BETWEEN_CHANGES)
+                if (lastEntity instanceof CirclePeg) {
+                    var circEntity = ((CirclePeg) lastEntity);
+                    // grow and shrink radius
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD6) || manager.isPressed(KeyEvent.VK_NUMPAD3)) {
+                        circEntity.radius += 1;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD1) || manager.isPressed(KeyEvent.VK_NUMPAD4)) {
+                        circEntity.radius -= 1;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    // swap orange
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD5)) {
+                        circEntity.orange = !circEntity.orange;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    //place 
+                    if (now - lastUpdateTime > TIME_BETWEEN_PLACING && manager.isPressed(KeyEvent.VK_ENTER) && !(circEntity instanceof Eraser)) {
+                        createCirc(true);
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    circEntity.updateCollider();
+                } else if (lastEntity instanceof RectPeg) {
+                    var rectEntity = ((RectPeg) lastEntity);
+                    // grow and shrink angle
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD7)) {
+                        rectEntity.angle += Math.toRadians(1);
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD9)) {
+                        rectEntity.angle -= Math.toRadians(1);
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    // grow and shrink width
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD4)) {
+                        rectEntity.width -= 1;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD6)) {
+                        rectEntity.width += 1;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    // grow and shrink height
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD1)) {
+                        rectEntity.height -= 1;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD3)) {
+                        rectEntity.height += 1;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    // swap orange
+                    if (manager.isPressed(KeyEvent.VK_NUMPAD5)) {
+                        rectEntity.orange = !rectEntity.orange;
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    //place 
+                    if (now - lastUpdateTime > TIME_BETWEEN_PLACING && manager.isPressed(KeyEvent.VK_ENTER)) {
+                        createRect(true);
+                        lastUpdateTime = System.nanoTime();
+                    }
+                    rectEntity.updateCollider();
                 }
-                if (manager.isPressed(KeyEvent.VK_NUMPAD1) || manager.isPressed(KeyEvent.VK_NUMPAD4)) {
-                    circEntity.radius -= 1;
-                }
-                // swap orange
-                if (manager.isPressed(KeyEvent.VK_NUMPAD5)) {
-                    circEntity.orange = !circEntity.orange;
-                }
-                //place 
-                if (manager.isPressed(KeyEvent.VK_ENTER) && !(circEntity instanceof Eraser)) {
-                    createCirc(true);
-                }
-                circEntity.updateCollider();
-            } else if (lastEntity instanceof RectPeg) {
-                var rectEntity = ((RectPeg) lastEntity);
-                // grow and shrink angle
-                if (manager.isPressed(KeyEvent.VK_NUMPAD7)) {
-                    // rectEntity.angle += ROTATION_SPEED * deltaTime;
-                    rectEntity.angle += Math.toRadians(1);
-                }
-                if (manager.isPressed(KeyEvent.VK_NUMPAD9)) {
-                    // rectEntity.angle -= ROTATION_SPEED * deltaTime;
-                    rectEntity.angle -= Math.toRadians(1);
-                }
-                // grow and shrink width
-                if (manager.isPressed(KeyEvent.VK_NUMPAD4)) {
-                    rectEntity.width -= 1;
-                }
-                if (manager.isPressed(KeyEvent.VK_NUMPAD6)) {
-                    rectEntity.width += 1;
-                }
-                // grow and shrink height
-                if (manager.isPressed(KeyEvent.VK_NUMPAD1)) {
-                    rectEntity.height -= 1;
-                }
-                if (manager.isPressed(KeyEvent.VK_NUMPAD3)) {
-                    rectEntity.height += 1;
-                }
-                // swap orange
-                if (manager.isPressed(KeyEvent.VK_NUMPAD5)) {
-                    rectEntity.orange = !rectEntity.orange;
-                }
-                //place 
-                if (manager.isPressed(KeyEvent.VK_ENTER)) {
-                    createRect(true);
-                }
-                rectEntity.updateCollider();
-            }
             if (lastEntity instanceof Eraser) {
                 if (manager.isPressed(KeyEvent.VK_ENTER)) {
                     erase();

@@ -50,6 +50,7 @@ public class LevelEditor implements Runnable {
 
         initializeDrawing();
         initializeLevel("Danfy");
+        optionsBar = new OptionsBar();
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(inputManager);
 
@@ -140,14 +141,7 @@ public class LevelEditor implements Runnable {
 
         // frame.setSize(frame.getWidth() + 400, frame.getHeight());
 
-        frame.getContentPane().setLayout(null);
-
-        initializeButtons(frame);
-    }
-
-    private void initializeButtons(JFrame frame) {
-        optionsBar = new OptionsBar(frame);
-        frame.add(optionsBar.options);
+        // frame.getContentPane().setLayout(null);
     }
 
     private void initializeEntities(Scanner scanner) {

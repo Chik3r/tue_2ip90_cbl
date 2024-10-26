@@ -84,6 +84,8 @@ public class CircleCollider extends Collider {
         var circleVel = worldCenter.subtract(oldWorldPos);
         var lineVel = lineEnd.subtract(lineStart);
 
+        // If the velocity/displacement of the circle is too small, swept collision won't work properly.
+        // So we fall back to normal static collision
         if (circleVel.length() < 10) {
             Hit result = isTouchingLineSimple(lineStart, lineEnd);
             if (result != null) {
@@ -92,6 +94,29 @@ public class CircleCollider extends Collider {
 
             return null;
         }
+
+        // Let p1 be the starting point of the line, p2 be the final point of the line
+        // p3 be the old position of the circle, and p4 the new position of the circle.
+        // Let r be the radius of the circle.
+        // We can then take v1 = p4 - p3, and v2 = p2 - p1
+        // Then the parametric equation for the line l = p1 + s*v2, and
+        // the equation for the circle c = p3 + t*v1.
+        // We want to find when the distance between these two lines is equal to the radius,
+        // so we get: (l_x is the x component of l, similarly for other vectors)
+        // (l_x - c_x)^2 + (l_y - c_y)^2 = r^2
+        // If we replace l and c we get:
+        // (p1_x + s*v2_x - (p3_x + t*v1_x))^2 + (p1_y + s*v2_y - (p3_y + t*v1_y))^2 = r^2
+        // Let k = p1 - p3
+        // We take the derivative of t with respect to s, and assume t'(s) = 0 in order to find
+        // the values of t when dt/ds is 0.
+        // This leaves us with the following equation:
+        // t = ((k . v2) + s * (v2 . v2)) / (v1 . v2)
+        // We then replace this t back into the original equation, getting a quadratic equation
+        // which we can use to find s.
+        // With the values we found for s, we try to calculate t, and we have found the earliest
+        // and latest points in time where the circle collides with the line.
+        // If no s or t can be found, then they didn't collide. And if t is not in [0, 1], then
+        // the circle didn't hit the line during its motion.
 
         Vector2d vecOrigins = lineStart.subtract(oldWorldPos);
         double factorA = vecOrigins.dotp(lineVel);

@@ -49,7 +49,7 @@ public class LevelEditor implements Runnable {
     public void run() {
 
         initializeDrawing();
-        initializeLevel("Danfy");
+        initializeLevel("Editing");
         optionsBar = new OptionsBar(frameBounds);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(inputManager);
@@ -100,12 +100,12 @@ public class LevelEditor implements Runnable {
 
     private void initializeLevel(String level) {
         try {
-            this.background = ImageIO.read(new File("levels/" + level + "/Backgr2.png"));
+            this.background = ImageIO.read(new File("levels/" + level + "/Backgr.png"));
         } catch (IOException e) {
             //TODO: REMOVE THIS
             System.out.println("Nooooo you're pegging wrong 3 :((((");
         }
-        File instructions = new File("levels\\Danfy\\Danfy.txt");
+        File instructions = new File("levels\\" + level + "\\" + level + ".txt");
         Scanner scanner = null;
         try {
             scanner = new Scanner(instructions);
@@ -229,7 +229,7 @@ public class LevelEditor implements Runnable {
 
     public void saveLevel() {
         try {
-            FileWriter fWriter = new FileWriter("newLevel.txt");    
+            FileWriter fWriter = new FileWriter("levels\\Editing\\Editing.txt");    
             
             for (Entity entity : entities) {
                 if (entity instanceof CirclePeg) {

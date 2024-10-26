@@ -13,12 +13,14 @@ public class OptionsBar {
     private String displayText;
 
     public Vector2d pos;
+    public Vector2d prevPos;
 
     public OptionsBar(Rectangle frameBounds) {
         pos = new Vector2d(frameBounds.getWidth()/2, frameBounds.y);
         lastUpdateTime = System.nanoTime();
         baseText = "R - Rectangle Brush\nC - Circle Brush\nE - Eraser\nS - Save\nESC - No Brush";
         displayText = baseText;
+        prevPos = new Vector2d(0, 0);
     }
 
     public void createRect(Boolean placed) {
@@ -27,6 +29,7 @@ public class OptionsBar {
             LevelEditor.instance.removeEntity(lastEntity);
             rect = new RectPeg(0, 0, 30, 20, false);
         } else {
+            prevPos = ((Peg) lastEntity).pos;
             rect = new RectPeg(0, 0, ((RectPeg) lastEntity).width, ((RectPeg) lastEntity).height, false, ((RectPeg) lastEntity).angle);
         }
         lastEntity = rect;
@@ -40,6 +43,7 @@ public class OptionsBar {
             LevelEditor.instance.removeEntity(lastEntity);
             circ = new CirclePeg(0, 0, 10, false);
         } else {
+            prevPos = ((Peg) lastEntity).pos;
             circ = new CirclePeg(0, 0, ((CirclePeg) lastEntity).radius, false);
         }
         lastEntity = circ;
@@ -93,11 +97,13 @@ public class OptionsBar {
 
     private String changeText(Entity entity) {
         String str = 
-        "\nPos:    " + ((Peg) entity).pos.x + " " + ((Peg) entity).pos.y + 
-        "\nWidth:  " + (entity instanceof CirclePeg ? ((CirclePeg) entity).radius : ((RectPeg) entity).width) +
+        "\nWidth: " + (entity instanceof CirclePeg ? ((CirclePeg) entity).radius : ((RectPeg) entity).width) +
         "\nHeight: " + (entity instanceof CirclePeg ? ((CirclePeg) entity).radius : ((RectPeg) entity).height) +
-        "\nAngle:  " + ((entity instanceof CirclePeg ? "" : Math.toDegrees(((RectPeg) entity).angle))) +
-        "\nOrange: " + ((Peg) entity).orange;
+        "\nAngle: " + ((entity instanceof CirclePeg ? "" : Math.toDegrees(((RectPeg) entity).angle))) +
+        "\nOrange: " + ((Peg) entity).orange +
+        "\n\nPos: " + ((Peg) entity).pos.x + " " + ((Peg) entity).pos.y + 
+        "\nRel Pos: " + ((Peg) entity).pos.subtract(prevPos).x + " " + ((Peg) entity).pos.subtract(prevPos).y +
+        "\nRel Len: " + ((Peg) entity).pos.subtract(prevPos).length();
 
         return baseText + str;
     }

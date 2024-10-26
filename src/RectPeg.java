@@ -47,19 +47,7 @@ public class RectPeg extends Peg {
         this.beenHit = false;
         this.angle = angle;
 
-
-        ArrayList<Vector2d> vertices = new ArrayList<Vector2d>();
-        double tmpX = width / 2.0;
-        double tmpY = height / 2.0;
-        vertices.add(new Vector2d(-tmpX, -tmpY));
-        vertices.add(new Vector2d(tmpX, -tmpY));
-        vertices.add(new Vector2d(tmpX, tmpY));
-        vertices.add(new Vector2d(-tmpX, tmpY));
-
-        var col = new PolygonCollider(vertices);
-        col.setWorldPos(pos.add(new Vector2d(tmpX, tmpY)));
-        col.setAngle(angle);
-        this.collider = col;
+        updateCollider();
     }
 
     @Override
@@ -89,6 +77,33 @@ public class RectPeg extends Peg {
 
     @Override
     public void update(float deltaTime) {
+        Hit hit;
+        for (Entity entity : Game.instance.getEntities()) {
+            if (entity instanceof Peg) {
+                hit = collider.isTouching(((Peg) entity).getCollider());
+                if (hit != null) {
+                    collisionCalc(hit);
+                }
+            }
+        }
+    }
 
+    public void updateCollider() {
+        ArrayList<Vector2d> vertices = new ArrayList<Vector2d>();
+        double tmpX = width / 2.0;
+        double tmpY = height / 2.0;
+        vertices.add(new Vector2d(-tmpX, -tmpY));
+        vertices.add(new Vector2d(tmpX, -tmpY));
+        vertices.add(new Vector2d(tmpX, tmpY));
+        vertices.add(new Vector2d(-tmpX, tmpY));
+        var col = new PolygonCollider(vertices);
+        col.setWorldPos(pos.add(new Vector2d(tmpX, tmpY)));
+        col.setAngle(angle);
+        this.collider = col;
+    }
+
+    public void collisionCalc(Hit hit) {
+        pos = pos.add(hit.delta());
+        collider.setWorldPos(pos);   
     }
 }

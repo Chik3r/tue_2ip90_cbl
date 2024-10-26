@@ -33,4 +33,9 @@ public class CirclePeg extends Peg {
     public void update(float deltaTime) {
 
     }
+
+    public void updateCollider() {
+        Vector2d center = new Vector2d(radius, radius);
+        this.collider = new CircleCollider(center, pos, radius);
+    }
 }

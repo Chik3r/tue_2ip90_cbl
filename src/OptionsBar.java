@@ -155,9 +155,10 @@ public class OptionsBar {
                     circEntity.orange = !circEntity.orange;
                 }
                 //place 
-                if (manager.isPressed(KeyEvent.VK_ENTER)) {
+                if (manager.isPressed(KeyEvent.VK_ENTER) && !(circEntity instanceof Eraser)) {
                     createCirc(true);
                 }
+                circEntity.updateCollider();
             } else if (lastEntity instanceof RectPeg) {
                 var rectEntity = ((RectPeg) lastEntity);
                 // grow and shrink angle
@@ -191,6 +192,7 @@ public class OptionsBar {
                 if (manager.isPressed(KeyEvent.VK_ENTER)) {
                     createRect(true);
                 }
+                rectEntity.updateCollider();
             }
             if (lastEntity instanceof Eraser) {
                 if (manager.isPressed(KeyEvent.VK_ENTER)) {

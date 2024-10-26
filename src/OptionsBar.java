@@ -17,7 +17,7 @@ public class OptionsBar {
     public OptionsBar(Rectangle frameBounds) {
         pos = new Vector2d(frameBounds.getWidth()/2, frameBounds.y);
         lastUpdateTime = System.nanoTime();
-        baseText = "R - Rectangle Brush\nC - Circle Brush\nE - Eraser\nS - Save";
+        baseText = "R - Rectangle Brush\nC - Circle Brush\nE - Eraser\nS - Save\nESC - No Brush";
         displayText = baseText;
     }
 
@@ -57,13 +57,14 @@ public class OptionsBar {
         LevelEditor.instance.placing = true;
     }
 
-    public void saveLevel() {
-        LevelEditor.instance.saveLevel();
+    public void clearBrush() {
+        LevelEditor.instance.removeEntity(lastEntity);
+        lastEntity = null;
+        LevelEditor.instance.placing = false;
     }
 
-    public void draw(GraphicsWrapper g, Font font) {
-        g.setColor(Color.BLACK);
-        g.drawString(displayText, (int) pos.x, (int) pos.y, font);
+    public void saveLevel() {
+        LevelEditor.instance.saveLevel();
     }
 
     public void erase() {
@@ -95,7 +96,16 @@ public class OptionsBar {
 
         return baseText + str;
     }
+
+    public void draw(GraphicsWrapper g, Font font) {
+        g.setColor(Color.BLACK);
+        g.drawString(displayText, (int) pos.x, (int) pos.y, font);
+    }
+
     /**
+     * CONTROLS:
+     * 
+     * NUM 7 | 9 - LEFT | RIGHT ROTATE RECTPEGS
      * NUM 4 | 6 - GROW | SHRINK HEIHGT/RADIUS
      * NUM 1 | 3 - GROW | SHRINK WIDTH/RADIUS
      * NUM 5 - ORANGE TOGGLE
@@ -105,11 +115,7 @@ public class OptionsBar {
      * E - ERASER
      * 
      * ARROW KEYS - PERCISION MOVEMENT
-     * 
-     * ENTER - PLACE
-     * 
-     * LEFT = ROTATE LEFT
-     * RIGHT = ROTATE RIGHT
+     * ((oops frogor to implement))
      * 
      * ENTER = PLACE
      */
@@ -125,7 +131,6 @@ public class OptionsBar {
         if (manager.isPressed(KeyEvent.VK_E)) {
             createEraser(false);
         }
-        
         if (placing) {
             mouseSnap();
             if (now - lastUpdateTime > TIME_BETWEEN_CHANGES)
@@ -200,7 +205,11 @@ public class OptionsBar {
             displayText = changeText(lastEntity);
         }
         if (manager.isPressed(KeyEvent.VK_S)) {
+            clearBrush();
             saveLevel();
+        }
+        if (manager.isPressed(KeyEvent.VK_ESCAPE)) {
+            clearBrush();
         }
     }
 }

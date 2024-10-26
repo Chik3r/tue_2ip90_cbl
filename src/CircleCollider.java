@@ -82,63 +82,144 @@ public class CircleCollider extends Collider {
         Vector2d oldWorldPos = getOldWorldPos();
         Vector2d worldCenter = getWorldCenter();
         var circleVel = worldCenter.subtract(oldWorldPos);
-        circleVel = circleVel.add(circleVel.unit().scalarMult(radius)); // Extend velocity by radius
         var lineVel = lineEnd.subtract(lineStart);
 
-        // Check if the path of the circle ever hits the line using fancy matrix math.
-        // See https://stackoverflow.com/questions/73079419/intersection-of-two-vector
-        double denominator = circleVel.x * -lineVel.y + lineVel.x * circleVel.y;
-        if (denominator == 0) {
-            // No collision
+        if (circleVel.length() < 10) {
+            Hit result = isTouchingLineSimple(lineStart, lineEnd);
+            if (result != null) {
+                return new LineHit(result.delta(), result.normal(), 0);
+            }
+
             return null;
         }
 
         Vector2d vecOrigins = lineStart.subtract(oldWorldPos);
-        double timeCircle = (lineVel.x * vecOrigins.y - lineVel.y * vecOrigins.x) / denominator;
-        double timeLine = (circleVel.x * vecOrigins.y - circleVel.y * vecOrigins.x) / denominator;
+        double factorA = vecOrigins.dotp(lineVel);
+        double factorB = lineVel.dotp(lineVel);
+        double factorC = circleVel.dotp(lineVel);
 
-        if (timeCircle >= 0 && timeCircle <= 1 && timeLine >= 0 && timeLine <= 1) {
-            // Circle hit the line at some point within the line segment
-            // Calculate the circle's actual center by moving the point back by radius
+        if (Math.abs(factorC) < 0.00000001) {
+            // factorC is 0, equation can't be solved.
+            // There probably is no hit, but make an extra check just in case
+            Hit result = isTouchingLineSimple(lineStart, lineEnd);
+            if (result != null) {
+                return new LineHit(result.delta(), result.normal(), 0);
+            }
 
-            // 0.1 needed to prevent double precision errors
-            var delta = calculateDelta(timeCircle, oldWorldPos, circleVel, worldCenter, -0.1);
-            return new LineHit(delta, lineVel.normal(), timeCircle);
-        }
-
-        // The circle hit the line outside the line segment, test if it hit one of the vertices.
-        double timeCircleLineStart = testPointHit(circleVel, lineStart);
-        double timeCircleLineEnd = testPointHit(circleVel, lineEnd);
-        double timeCircleLine = Math.min(timeCircleLineStart, timeCircleLineEnd);
-        if (Double.isNaN(timeCircleLine) || timeCircleLine < 0 || timeCircleLine > 1) {
-            // No solution
             return null;
         }
 
-        // Calculate the delta
-        var delta = calculateDelta(timeCircleLine, oldWorldPos, circleVel, worldCenter, 0);
-        return new LineHit(delta, lineVel.normal(), timeCircleLine);
-    }
+        // parts of a quadratic equation for s
+        double circleVelMagSquare = circleVel.dotp(circleVel);
+        double kDotV1 = vecOrigins.dotp(circleVel);
+        double quadEqA = factorB - (2 * factorC * factorB) / factorC
+                + (circleVelMagSquare * factorB * factorB) / (factorC * factorC);
+        double quadEqB = 2 * factorA - (2 * kDotV1 * factorB) / factorC
+                - (2 * factorC * factorA) / factorC
+                + (circleVelMagSquare * 2 * factorA * factorB) / (factorC * factorC);
+        double kDotK = vecOrigins.dotp(vecOrigins);
+        double quadEqC = kDotK - (2 * kDotV1 * factorA) / factorC
+                + (factorA * factorA * circleVelMagSquare) / (factorC * factorC)
+                - (radius * radius);
 
-    private double testPointHit(Vector2d vel, Vector2d point) {
-        Vector2d difference = getOldWorldPos().subtract(point);
-
-        // circlePath = oldWorldPos + t * delta
-        // calculate t for distanceSquared(circlePath, point) = r * r
-        // a, b, c are parts of a quadratic equation for t
-        double a = vel.lengthSquared();
-        double b = 2 * vel.dotp(difference);
-        double c = difference.lengthSquared() - radius * radius;
-
-        double discriminant = b * b - 4 * a * c;
+        double discriminant = quadEqB * quadEqB - 4 * quadEqA * quadEqC;
         if (discriminant < 0) {
-            // No solution
-            return Double.NaN;
+            // Special check for outliers
+            Hit result = isTouchingLineSimple(lineStart, lineEnd);
+            if (result != null) {
+                return new LineHit(result.delta(), result.normal(), 0);
+            }
+
+            // No solutions
+            return null;
         }
 
-        double t1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-        double t2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-        return Math.min(t1, t2);
+        double sqrtDiscriminant = Math.sqrt(discriminant);
+        double s1 = (-quadEqB + sqrtDiscriminant) / (2 * quadEqA);
+        double s2 = (-quadEqB - sqrtDiscriminant) / (2 * quadEqA);
+
+        if (s1 < 0 || s1 > 1) {
+            s1 = Double.NaN;
+        }
+        if (s2 < 0 || s2 > 1) {
+            s2 = Double.NaN;
+        }
+
+        // Now use s to find t
+        double t1 = (factorA + s1 * factorB) / factorC;
+        double t2 = (factorA + s2 * factorB) / factorC;
+        double tToUse = Math.min(t1, t2);
+
+        if (Double.isNaN(tToUse)) {
+            // Special check for outliers
+            Hit result = isTouchingLineSimple(lineStart, lineEnd);
+            if (result != null) {
+                return new LineHit(result.delta(), result.normal(), 0);
+            }
+
+            return null;
+        }
+
+        // Use the other time if the lowest one is too small
+        if (tToUse < 0) {
+            tToUse = tToUse == t1 ? t2 : t1;
+        }
+        if (tToUse < 0 || tToUse > 1) {
+            return null;
+        }
+
+        Vector2d delta = calculateDelta(tToUse, oldWorldPos, circleVel, worldCenter, -0.1);
+
+        return new LineHit(delta, lineVel.normal(), tToUse);
+    }
+
+    private Hit isTouchingLineSimple(Vector2d lineStart, Vector2d lineEnd) {
+        Vector2d worldCenter = getWorldCenter();
+
+        var centerToLineStart = worldCenter.subtract(lineStart);
+        var line = lineEnd.subtract(lineStart);
+        var dot = centerToLineStart.dotp(line) / line.length();
+
+        Vector2d closest = lineStart.add(line.unit().scalarMult(dot));
+        double closestDistanceSum = Math.sqrt(closest.distanceSquared(lineStart)) + Math.sqrt(closest.distanceSquared(lineEnd));
+        if (Math.abs(closestDistanceSum - line.length()) > 0.001) {
+            // 0.001 to account for some error
+            // If the sum of the distance of the closest point to both extremes of the line is
+            // greater than the length of the line, then the point isn't on the line
+
+            // If the circle is near one of the vertices, then we need to calculate
+            // the delta away from that vertex
+            if (worldCenter.distanceSquared(lineStart) <= radius * radius) {
+                // Similar calculations to the code at the end of the method, but calculating
+                // against an edge instead of the closest point.
+                double k = radius - centerToLineStart.length();
+                Vector2d delta = centerToLineStart.unit().scalarMult(k);
+                return new Hit(delta, line.normal());
+            } else if (worldCenter.distanceSquared(lineEnd) <= radius * radius) {
+                Vector2d centerEndLine = worldCenter.subtract(lineEnd);
+                double k = radius - centerEndLine.length();
+                Vector2d delta = centerEndLine.unit().scalarMult(k);
+                return new Hit(delta, line.normal());
+            }
+
+            // The circle center isn't near the line segment or a vertex of the line, so
+            // it isn't hitting the line.
+            return null;
+        }
+
+        // k should be the radius of the circle - the distance of the center to the closest point
+        // Then delta is k * (line between closest point and circle)
+        Vector2d centerClosestLine = worldCenter.subtract(closest);
+
+        double length = centerClosestLine.length();
+        if (length > radius) {
+            return null;
+        }
+
+        double k = radius - length;
+        Vector2d delta = centerClosestLine.unit().scalarMult(k);
+
+        return new Hit(delta, line.normal());
     }
 
     private static Vector2d calculateDelta(double time, Vector2d start, Vector2d vel,

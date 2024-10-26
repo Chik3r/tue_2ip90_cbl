@@ -9,6 +9,7 @@ public class Eraser extends CirclePeg {
     @Override
     public void draw(GraphicsWrapper g) {
         g.fillOval((int) pos.x, (int) pos.y, radius * 2, radius * 2, Color.GRAY);
+        collider.draw(g);
     }
 
 

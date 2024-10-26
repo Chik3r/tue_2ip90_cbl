@@ -1,14 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 
 public class OptionsBar {
     public JPanel options;
     public Entity lastEntity;
-    public ActionListener al;
+    private boolean entityPlaced;
 
     private static final double ROTATION_SPEED = Math.PI / 2 / 1000;
     public static final double MIN_ANGLE = 0;
@@ -48,20 +47,26 @@ public class OptionsBar {
     }
 
     public void createRect(Boolean placed) {
+        RectPeg rect;
         if (!placed) {
             LevelEditor.instance.removeEntity(lastEntity);
+            rect = new RectPeg(0, 0, 30, 20, false);
+        } else {
+            rect = new RectPeg(0, 0, ((RectPeg) lastEntity).width, ((RectPeg) lastEntity).height, false, ((RectPeg) lastEntity).angle);
         }
-        var rect = new RectPeg(0, 0, 30, 20, false);
         lastEntity = rect;
         LevelEditor.instance.addEntity(rect);
         LevelEditor.instance.placing = true;
     }
 
     public void createCirc(Boolean placed) {
+        CirclePeg circ;
         if (!placed) {
             LevelEditor.instance.removeEntity(lastEntity);
+            circ = new CirclePeg(0, 0, 10, false);
+        } else {
+            circ = new CirclePeg(0, 0, ((CirclePeg) lastEntity).radius, false);
         }
-        var circ = new CirclePeg(0, 0, 10, false);
         lastEntity = circ;
         LevelEditor.instance.addEntity(circ);
         LevelEditor.instance.placing = true;
@@ -85,23 +90,37 @@ public class OptionsBar {
         // options.repaint(0);
     }
 
+    public void erase() {
+        for (Entity entity : LevelEditor.instance.getEntities()) {
+            if (entity instanceof Peg && !entity.equals(lastEntity)) {
+                Hit hit = ((Peg)lastEntity).getCollider().isTouching(((Peg) entity).getCollider());
+                if (hit != null) {
+                    ((Peg) entity).gotHit();
+                }
+            }
+        }
+    }
+
     private void mouseSnap() {
         Point2D mousePos = MouseInfo.getPointerInfo().getLocation();
         if (lastEntity instanceof Peg) {
             ((Peg) lastEntity).pos = new Vector2d((int) mousePos.getX(), (int) mousePos.getY());
+            ((Peg) lastEntity).getCollider().setWorldPos(((Peg) lastEntity).pos);
         }
     }
 
     /**
-     * NUM 7 = RECT
-     * NUM 8 = CIRC
-     * NUM 9 = ERASER
-     * NUM 6 = SWAP ORANGE
-     * NUM 5 = GROW WIDTH / RAD
-     * NUM 4 = SHRINK WIDTH / RAD
-     * NUM 2 = GROW HEIGHT
-     * NUM 1 = SHRINK HEIGHT
+     * NUM 4 | 6 - GROW | SHRINK HEIHGT/RADIUS
+     * NUM 1 | 3 - GROW | SHRINK WIDTH/RADIUS
+     * NUM 5 - ORANGE TOGGLE
      * 
+     * R - RECTANGLE BRUSH
+     * C - CIRCLE BRUSH
+     * BACKSPACE - ERASER
+     * 
+     * ARROW KEYS - PERCISION MOVEMENT
+     * 
+     * ENTER - PLACE
      * 
      * LEFT = ROTATE LEFT
      * RIGHT = ROTATE RIGHT
@@ -109,30 +128,74 @@ public class OptionsBar {
      * ENTER = PLACE
      */
     public void update(float deltaTime, Boolean placing) {
-        if (LevelEditor.instance.inputManager.isPressed(KeyEvent.VK_NUMPAD7)) {
+        var manager = LevelEditor.instance.inputManager;
+        if (manager.isPressed(KeyEvent.VK_R)) {
             createRect(false);
         }
-        if (LevelEditor.instance.inputManager.isPressed(KeyEvent.VK_NUMPAD8)) {
+        if (manager.isPressed(KeyEvent.VK_C)) {
             createCirc(false);
         }
-        if (LevelEditor.instance.inputManager.isPressed(KeyEvent.VK_NUMPAD9)) {
+        if (manager.isPressed(KeyEvent.VK_BACK_SPACE)) {
             createEraser(false);
         }
         
         if (placing) {
             mouseSnap();
-            if (lastEntity instanceof RectPeg) {
+            if (lastEntity instanceof CirclePeg) {
+                var circEntity = ((CirclePeg) lastEntity);
+                // grow and shrink radius
+                if (manager.isPressed(KeyEvent.VK_NUMPAD6) || manager.isPressed(KeyEvent.VK_NUMPAD3)) {
+                    circEntity.radius += 1;
+                }
+                if (manager.isPressed(KeyEvent.VK_NUMPAD1) || manager.isPressed(KeyEvent.VK_NUMPAD4)) {
+                    circEntity.radius -= 1;
+                }
+                // swap orange
+                if (manager.isPressed(KeyEvent.VK_NUMPAD5)) {
+                    circEntity.orange = !circEntity.orange;
+                }
+                //place 
+                if (manager.isPressed(KeyEvent.VK_ENTER)) {
+                    createCirc(true);
+                }
+            } else if (lastEntity instanceof RectPeg) {
                 var rectEntity = ((RectPeg) lastEntity);
-                if (LevelEditor.instance.inputManager.isPressed(KeyEvent.VK_LEFT)) {
-                    rectEntity.angle += ROTATION_SPEED * deltaTime;
+                // grow and shrink angle
+                if (manager.isPressed(KeyEvent.VK_NUMPAD7)) {
+                    // rectEntity.angle += ROTATION_SPEED * deltaTime;
+                    rectEntity.angle += Math.toRadians(1);
                 }
-                if (LevelEditor.instance.inputManager.isPressed(KeyEvent.VK_RIGHT)) {
-                    rectEntity.angle -= ROTATION_SPEED * deltaTime;
+                if (manager.isPressed(KeyEvent.VK_NUMPAD9)) {
+                    // rectEntity.angle -= ROTATION_SPEED * deltaTime;
+                    rectEntity.angle -= Math.toRadians(1);
                 }
-                if (LevelEditor.instance.inputManager.isPressed(KeyEvent.VK_ENTER)) {
+                // grow and shrink width
+                if (manager.isPressed(KeyEvent.VK_NUMPAD4)) {
+                    rectEntity.width -= 1;
+                }
+                if (manager.isPressed(KeyEvent.VK_NUMPAD6)) {
+                    rectEntity.width += 1;
+                }
+                // grow and shrink height
+                if (manager.isPressed(KeyEvent.VK_NUMPAD1)) {
+                    rectEntity.height -= 1;
+                }
+                if (manager.isPressed(KeyEvent.VK_NUMPAD3)) {
+                    rectEntity.height += 1;
+                }
+                // swap orange
+                if (manager.isPressed(KeyEvent.VK_NUMPAD5)) {
+                    rectEntity.orange = !rectEntity.orange;
+                }
+                //place 
+                if (manager.isPressed(KeyEvent.VK_ENTER)) {
                     createRect(true);
                 }
-                // rectEntity.angle = Math.max(MIN_ANGLE, Math.min(rectEntity.angle, MAX_ANGLE));
+            }
+            if (lastEntity instanceof Eraser) {
+                if (manager.isPressed(KeyEvent.VK_ENTER)) {
+                    erase();
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ public abstract class Peg extends Entity {
 
     public void clearing() {
         if (beenHit) {
-            Game.instance.removeEntity(this);
+            LevelEditor.instance.removeEntity(this);
         }
     }
 

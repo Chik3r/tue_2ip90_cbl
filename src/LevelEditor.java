@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferStrategy;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,7 @@ public class LevelEditor implements Runnable {
     private static final int MAX_UPDATES_BETWEEN_RENDER = 1;
 
     public static LevelEditor instance;
+    public boolean placing;
 
     private final ArrayList<Entity> entities = new ArrayList<>();
     JFrame frame;
@@ -25,6 +27,7 @@ public class LevelEditor implements Runnable {
     Image background;
 
     public InputManager inputManager = new InputManager();
+    public OptionsBar optionsBar;
 
     public LevelEditor() {
         instance = this;
@@ -34,25 +37,9 @@ public class LevelEditor implements Runnable {
         entities.remove(entity);
     }
 
-
-    // public void clearEntities() {
-        // Ball ball = null;
-        // for (Entity entity : entities) {
-            // if (entity instanceof Ball) {
-                // ball = (Ball) entity;
-                // break;
-            // }
-        // }
-        // if (ball != null) {
-            // if (ball.clearCheck()) {
-                // for (int i = entities.size() - 1; i >= 0; i--) {
-                    // if (entities.get(i) instanceof Peg) {
-                        // ((Peg) entities.get(i)).clearing();
-                    // }
-                // }
-            // }
-        // }
-    // }
+    public void addEntity(Entity entity) {
+        entities.add(entity);
+    }
 
     public ArrayList<Entity> getEntities() {
         return entities;
@@ -63,8 +50,6 @@ public class LevelEditor implements Runnable {
 
         initializeDrawing();
         initializeLevel("Danfy");
-
-        saveLevel();
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(inputManager);
 
@@ -152,8 +137,17 @@ public class LevelEditor implements Runnable {
         frameBounds.x = insets.left;
         frameBounds.height -= insets.top + insets.bottom;
         frameBounds.y = insets.top;
-        System.out.println(frameBounds);
-        System.out.println(insets);
+
+        // frame.setSize(frame.getWidth() + 400, frame.getHeight());
+
+        frame.getContentPane().setLayout(null);
+
+        initializeButtons(frame);
+    }
+
+    private void initializeButtons(JFrame frame) {
+        optionsBar = new OptionsBar(frame);
+        frame.add(optionsBar.options);
     }
 
     private void initializeEntities(Scanner scanner) {
@@ -191,21 +185,6 @@ public class LevelEditor implements Runnable {
             }
         }
 
-        // entities.add(new RectPeg(31, 266, 20, 30, false));
-        // entities.add(new RectPeg(31, 297, 20, 30, true));
-        // entities.add(new RectPeg(52, 266, 30, 20, false));
-        // entities.add(new CirclePeg(83, 266, 10, false));
-        // entities.add(new RectPeg(110, 266, 140, 276, 20, false));
-        // entities.add(new RectPeg(145, 266, 30, 20, true, -Math.PI/4));
-
-
-        // entities.add(new CirclePeg(50, 450, 25, false));
-        // entities.add(new RectPeg(700, 50, 50, 500, false));
-        // entities.add(new RectPeg(50, 500, 700, 50, false, Math.PI / 4));
-        // entities.add(new RectPeg(600, 500, 5, 350, 50, false));
-        // entities.add(new RectPeg(0, 50, 50, 500, false));
-        // entities.add(new RectPeg(50, 700, 700, 50, false));
-
         // entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
     }
 
@@ -227,7 +206,7 @@ public class LevelEditor implements Runnable {
                 GraphicsWrapper wrapper = new GraphicsWrapper(g, frameBounds);
                 // Clear frame
                 g.setColor(Color.white);
-                g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+                g.fillRect(0, 0, frameBounds.width, frame.getHeight());
 
                 // Draw Backgr
                 wrapper.drawImage(background, 0, 0, frameBounds.width, frameBounds.height);
@@ -237,22 +216,33 @@ public class LevelEditor implements Runnable {
                     entity.draw(wrapper);
                 }
 
+                optionsBar.draw(g);
+
                 g.dispose();
             } while (bufferStrategy.contentsRestored());
+            
             bufferStrategy.show();
         } while (bufferStrategy.contentsLost());
-    }
-
-    private void update(float deltaTime) {
-        for (Entity entity : entities) {
-            entity.update(deltaTime);
-        }
-        //needed because removing entities while looping over them to update is big nono
         
-        // clearEntities();
     }
 
-    private void saveLevel() {
+    public void clearEntities() {
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            if (entities.get(i) instanceof Peg) {
+                ((Peg) entities.get(i)).clearing();
+            }
+        }
+    }
+    
+    private void update(float deltaTime) {
+        optionsBar.update(deltaTime, placing);
+        // for (Entity entity : entities) {
+            // entity.update(deltaTime);
+        // }
+        clearEntities();
+    }
+
+    public void saveLevel() {
         try {
             FileWriter fWriter = new FileWriter("newLevel.txt");    
             

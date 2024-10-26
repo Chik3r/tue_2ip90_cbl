@@ -146,9 +146,17 @@ public class Game implements Runnable {
                 g.setColor(Color.white);
                 g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
 
-                // TODO: Depth
                 for (Entity entity : entities) {
                     entity.draw(wrapper);
+                }
+
+
+                if (entities.stream().noneMatch(x -> x instanceof Peg)) {
+                    // No more pegs, show win screen
+                    g.setColor(Color.red);
+                    var font  = g.getFont();
+                    font = font.deriveFont(font.getSize() * 4f);
+                    wrapper.drawString("YOU ARE THE PEGGING MASTER", frameBounds.width / 2, frameBounds.height / 2, font);
                 }
 
                 g.dispose();

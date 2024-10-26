@@ -10,8 +10,6 @@ public class GraphicsWrapper {
         this.bounds = bounds;
     }
 
-    
-
     public void setColor(Color color) {
         graphics.setColor(color);
     }
@@ -71,5 +69,21 @@ public class GraphicsWrapper {
         aft.translate(x + bounds.x, y + bounds.y);
         aft.rotate(radians, image.getWidth(null) / 2.0, image.getHeight(null) / 2.0);
         graphics.drawImage(image, aft, null);
+    }
+
+    /**
+     * Draws text
+     * @param string The string to render
+     * @param x The string will be centered around this point
+     * @param y The string will be centered around this point
+     * @param font The font to use to render
+     */
+    public void drawString(String string, int x, int y, Font font) {
+        FontMetrics metrics = graphics.getFontMetrics(font);
+        int realX = x - metrics.stringWidth(string) / 2;
+        int realY = y - metrics.getHeight() / 2 + metrics.getAscent();
+
+        graphics.setFont(font);
+        graphics.drawString(string, realX, realY);
     }
 }

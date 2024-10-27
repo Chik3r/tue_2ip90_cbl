@@ -24,6 +24,10 @@ public class BallLauncher extends Entity {
 
     @Override
     public void update(float deltaTime) {
+        if (Game.instance.introShown) {
+            return;
+        }
+
         if (Game.instance.inputManager.isPressed(KeyEvent.VK_LEFT)) {
             angle += ROTATION_SPEED * deltaTime;
         }

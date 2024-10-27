@@ -15,8 +15,9 @@ public class Game implements Runnable {
 
     public static Game instance;
 
-    private final ArrayList<Entity> entities = new ArrayList<>();
     public final InputManager inputManager = new InputManager();
+    public boolean introShown = true;
+    private final ArrayList<Entity> entities = new ArrayList<>();
     JFrame frame;
     Rectangle frameBounds;
     BufferStrategy bufferStrategy;
@@ -54,6 +55,7 @@ public class Game implements Runnable {
     public void clearInfo() {
         if (inputManager.isPressed(KeyEvent.VK_ENTER)) {
             info = "";
+            introShown = false;
         }
     }
 
@@ -228,14 +230,14 @@ public class Game implements Runnable {
                     entity.draw(wrapper);
                 }
 
-                if (!info.equals("")){
+                if (!info.isEmpty()) {
                     var font = g.getFont();
-                    font = font.deriveFont(font.getSize() * 1.2f);
+                    font = font.deriveFont(font.getSize() * 1.5f);
 
                     wrapper.fillRect(frameBounds.width / 4, frameBounds.height / 4, 
                                     frameBounds.width / 2, frameBounds.height / 2);
                     g.setColor(Color.gray);
-                    wrapper.drawString(info, frameBounds.width / 2, frameBounds.height / 4, font);
+                    wrapper.drawString(info, frameBounds.width / 2, frameBounds.height / 4 - 15, font);
                 }
 
                 if (entities.stream().noneMatch(x -> x instanceof Peg && ((Peg) x).orange)) {

@@ -79,7 +79,7 @@ public class GraphicsWrapper {
      */
     public void drawString(String string, int x, int y, Font font) {
         FontMetrics metrics = graphics.getFontMetrics(font);
-        int realY = y - metrics.getHeight() / 2 + metrics.getAscent();
+        int realY = y - (metrics.getHeight() / 2) + metrics.getAscent();
         graphics.setFont(font);
         for (String line : string.split("\n")) {
             int realX = x - metrics.stringWidth(line) / 2;

@@ -72,7 +72,7 @@ public class GraphicsWrapper {
     }
 
     /**
-     * Draws text
+     * Draws text.
      * @param string The string to render
      * @param x The string will be centered around this point
      * @param y The string will be centered around this point

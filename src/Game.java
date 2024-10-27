@@ -1,9 +1,12 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 import javax.imageio.ImageIO;
-import java.io.*;
-import java.util.*;
+import javax.swing.*;
 
 public class Game implements Runnable {
     private static final int FRAMES_PER_SECOND = 60;
@@ -15,13 +18,12 @@ public class Game implements Runnable {
     public static Game instance;
 
     private final ArrayList<Entity> entities = new ArrayList<>();
+    public final InputManager inputManager = new InputManager();
     JFrame frame;
     Rectangle frameBounds;
     BufferStrategy bufferStrategy;
     Thread gameLoopThread;
     Image background;
-
-    public InputManager inputManager = new InputManager();
 
     public Game() {
         instance = this;
@@ -73,7 +75,8 @@ public class Game implements Runnable {
 
         while (true) {
             if (frameCount % (FRAMES_PER_SECOND / 2) == 0) {
-                System.out.println(frameCount / ((System.currentTimeMillis() - fpsStartTime) / 1000d));
+                System.out.println(frameCount
+                        / ((System.currentTimeMillis() - fpsStartTime) / 1000d));
             }
 
             // Frame rate
@@ -82,7 +85,8 @@ public class Game implements Runnable {
 
             // Update the physics as many times as needed to catch up
             int updateCount = 0;
-            while (now - lastUpdateTime >= TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BETWEEN_RENDER) {
+            while (now - lastUpdateTime >= TIME_BETWEEN_UPDATES
+                    && updateCount < MAX_UPDATES_BETWEEN_RENDER) {
                 // Split physics updates into 4 updates
                 for (int i = 0; i < 4; i++) {
                     update(elapsedMillis / 4.0f);
@@ -102,7 +106,8 @@ public class Game implements Runnable {
 
             // Wait for enough time to have passed until the next frame
             long lastRenderTime = now;
-            while (now - lastRenderTime < TIME_BETWEEN_UPDATES && now - lastUpdateTime <= TIME_BETWEEN_UPDATES) {
+            while (now - lastRenderTime < TIME_BETWEEN_UPDATES
+                    && now - lastUpdateTime <= TIME_BETWEEN_UPDATES) {
                 Thread.yield();
                 now = System.nanoTime();
             }
@@ -163,7 +168,7 @@ public class Game implements Runnable {
                 int x = Integer.parseInt(line[1]);
                 int y = Integer.parseInt(line[2]);
                 int rad = Integer.parseInt(line[3]);
-                Boolean orange = Boolean.parseBoolean(line[4]);
+                boolean orange = Boolean.parseBoolean(line[4]);
                 entities.add(new CirclePeg(x, y, rad, orange));
             } else if (line[0].equals("r")) {
                 int a = Integer.parseInt(line[1]);
@@ -171,15 +176,15 @@ public class Game implements Runnable {
                 int c = Integer.parseInt(line[3]);
                 int d = Integer.parseInt(line[4]);
                 if (line.length == 6) {
-                    Boolean orange = Boolean.parseBoolean(line[5]);
+                    boolean orange = Boolean.parseBoolean(line[5]);
                     entities.add(new RectPeg(a, b, c, d, orange));
                 } else if (line.length == 7) {
                     try {
                         int e = Integer.parseInt(line[5]);
-                        Boolean orange = line[6].equals("true");
+                        boolean orange = line[6].equals("true");
                         entities.add(new RectPeg(a, b, c, d, e, orange));
                     } catch (NumberFormatException e) {
-                        Boolean orange = line[5].equals("true");
+                        boolean orange = line[5].equals("true");
                         double angle = Double.parseDouble(line[6]);
                         entities.add(new RectPeg(a, b, c, d, orange, angle));
                     }
@@ -187,7 +192,8 @@ public class Game implements Runnable {
             }
         }
 
-        entities.add(new BorderCollider(new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
+        entities.add(new BorderCollider(
+                new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
     }
 
     private void draw(float deltaTime) {
@@ -214,10 +220,12 @@ public class Game implements Runnable {
                     font = font.deriveFont(font.getSize() * 4f);
                     // Shadow
                     g.setColor(Color.gray);
-                    wrapper.drawString("YOU ARE THE PEGGING MASTER", frameBounds.width / 2 + 2, frameBounds.height / 2 + 2, font);
+                    wrapper.drawString("YOU ARE THE PEGGING MASTER",
+                            frameBounds.width / 2 + 2, frameBounds.height / 2 + 2, font);
                     // Actual text
                     g.setColor(Color.red);
-                    wrapper.drawString("YOU ARE THE PEGGING MASTER", frameBounds.width / 2, frameBounds.height / 2, font);
+                    wrapper.drawString("YOU ARE THE PEGGING MASTER",
+                            frameBounds.width / 2, frameBounds.height / 2, font);
                 }
 
                 g.dispose();

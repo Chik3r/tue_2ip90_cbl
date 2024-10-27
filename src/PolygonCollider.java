@@ -79,14 +79,16 @@ public class PolygonCollider extends Collider {
             }
 
             for (Vector2d n : collider1.normals) {
-                double aMin = Double.POSITIVE_INFINITY, aMax = Double.NEGATIVE_INFINITY;
+                double aMin = Double.POSITIVE_INFINITY;
+                double aMax = Double.NEGATIVE_INFINITY;
                 for (Vector2d v : collider1.worldVertices) {
                     double dotProduct = n.dotp(v);
                     aMin = Math.min(aMin, dotProduct);
                     aMax = Math.max(aMax, dotProduct);
                 }
 
-                double bMin = Double.POSITIVE_INFINITY, bMax = Double.NEGATIVE_INFINITY;
+                double bMin = Double.POSITIVE_INFINITY;
+                double bMax = Double.NEGATIVE_INFINITY;
                 for (Vector2d v : collider2.worldVertices) {
                     double dotProduct = n.dotp(v);
                     bMin = Math.min(bMin, dotProduct);
@@ -116,7 +118,7 @@ public class PolygonCollider extends Collider {
     protected void draw(GraphicsWrapper g) {
         for (int i = 0; i < worldVertices.size(); i++) {
             Vector2d v = worldVertices.get(i);
-            Vector2d v2 = worldVertices.get((i+1) % worldVertices.size());
+            Vector2d v2 = worldVertices.get((i + 1) % worldVertices.size());
             g.drawLine((int) v.x, (int) v.y, (int) v2.x, (int) v2.y, Color.green);
         }
     }

@@ -5,9 +5,9 @@ import java.util.ArrayList;
  * Peg. But *rectangular*!
  */
 public class RectPeg extends Peg {
-    int width;
-    int height;
-    double angle;
+    final int width;
+    final int height;
+    final double angle;
     
     public RectPeg(int x, int y, int width, int height, boolean orange) {
         this.pos = new Vector2d(x, y);
@@ -17,7 +17,7 @@ public class RectPeg extends Peg {
         this.beenHit = false;
         this.angle = 0;
 
-        ArrayList<Vector2d> vertices = new ArrayList<Vector2d>();
+        ArrayList<Vector2d> vertices = new ArrayList<>();
         vertices.add(pos);
         vertices.add(new Vector2d(x + width, y));
         vertices.add(new Vector2d(x + width, y + height));
@@ -48,7 +48,7 @@ public class RectPeg extends Peg {
         this.angle = angle;
 
 
-        ArrayList<Vector2d> vertices = new ArrayList<Vector2d>();
+        ArrayList<Vector2d> vertices = new ArrayList<>();
         double tmpX = width / 2.0;
         double tmpY = height / 2.0;
         vertices.add(new Vector2d(-tmpX, -tmpY));
@@ -67,24 +67,13 @@ public class RectPeg extends Peg {
         Color colour = (orange) ? new Color(255, 153, 51) : Color.blue;
         g.fillRotatedRect((int) pos.x, (int) pos.y, width, height, angle, colour);
         colour = (orange) ? Color.orange : Color.cyan; 
-        g.fillRotatedRect((int) pos.x + 10, (int) pos.y + 10, width - 20, height - 20, angle, colour);
+        g.fillRotatedRect((int) pos.x + 10, (int) pos.y + 10,
+                width - 20, height - 20, angle, colour);
         if (beenHit) {
             // TODO: fancy particles :D
             // make it glowy
         }
     }
-
-    // @Override
-    // public void draw(GraphicsWrapper g) {
-        // Color colour = (orange) ? new Color(255, 153, 51) : Color.blue; 
-        // g.fillRect((int) pos.x, (int) pos.y, width, height, colour);
-        // colour = (orange) ? Color.orange : Color.cyan; 
-        // g.fillRect((int) pos.x + 10, (int) pos.y + 10, width - 20, height - 20, colour);
-        // if (beenHit) {
-            // TODO: fancy particles :D
-            // make it glowy
-        // }
-    // }
 
     @Override
     public void update(float deltaTime) {

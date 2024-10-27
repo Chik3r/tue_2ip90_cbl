@@ -54,7 +54,8 @@ public class CircleCollider extends Collider {
         double time = Double.POSITIVE_INFINITY;
         LineHit lineHitInfo = null;
         for (int i = 0; i < numVerticesPolygon; i++) {
-            LineHit hit = isTouchingLineSweep(collider.worldVertices.get(i), collider.worldVertices.get((i + 1) % numVerticesPolygon));
+            LineHit hit = isTouchingLineSweep(collider.worldVertices.get(i),
+                    collider.worldVertices.get((i + 1) % numVerticesPolygon));
             if (hit == null) {
                 continue;
             }
@@ -75,7 +76,8 @@ public class CircleCollider extends Collider {
     @Override
     protected void draw(GraphicsWrapper g) {
         Vector2d worldCenter = getWorldCenter();
-        g.drawOval((int) (worldCenter.x - radius), (int) (worldCenter.y - radius), (int) (radius*2), (int) (radius*2), Color.green);
+        g.drawOval((int) (worldCenter.x - radius), (int) (worldCenter.y - radius),
+                (int) (radius * 2), (int) (radius * 2), Color.green);
     }
 
     /**
@@ -91,8 +93,8 @@ public class CircleCollider extends Collider {
         var circleVel = worldCenter.subtract(oldWorldPos);
         var lineVel = lineEnd.subtract(lineStart);
 
-        // If the velocity/displacement of the circle is too small, swept collision won't work properly.
-        // So we fall back to normal static collision
+        // If the velocity/displacement of the circle is too small, swept collision won't
+        // work properly. So we fall back to normal static collision
         if (circleVel.length() < 1) {
             Hit result = isTouchingLineSimple(lineStart, lineEnd);
             if (result != null) {

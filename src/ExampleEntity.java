@@ -10,6 +10,6 @@ public class ExampleEntity extends Entity {
 
     @Override
     public void update(float deltaTime) {
-        xPos += (int) (0.1f*deltaTime);
+        xPos += (int) (0.1f * deltaTime);
     }
 }

@@ -1,7 +1,7 @@
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  * This is a Ball.
@@ -14,12 +14,11 @@ public class Ball extends Entity {
     static final double ELASTICITY = 0.8; // coefficient of restitution 
 
     private final CircleCollider collider;
+    Image kees;
     private Vector2d pos;
     private Vector2d lastPos;
     private Vector2d velocity;
     private boolean isAlive;
-
-    Image kees;
 
     /**
      * Constructor for Ball.
@@ -174,8 +173,9 @@ public class Ball extends Entity {
         if (pos.y > Game.instance.frameBounds.getHeight()) {
             setAlive(false);
         }
-        //TODO: This *may* result in a small bug when an upwards moving ball reaches the apex of its movement
-        // and clears everything because it moved too little that update
-        return pos.y > Game.instance.frameBounds.getHeight() || lastPos.subtract(pos).length() < 0.000001;
+        //TODO: This *may* result in a small bug when an upwards moving ball reaches the apex of
+        // its movement and clears everything because it moved too little that update
+        return pos.y > Game.instance.frameBounds.getHeight()
+                || lastPos.subtract(pos).length() < 0.000001;
     }
 }

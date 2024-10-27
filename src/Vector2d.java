@@ -1,8 +1,5 @@
 /**
  * 2 Dimensional vectors.
- * 
- * For some god forsaken reason checkstyle keeps telling me that the class name
- * and file do not match WHEN IN FACT THEY DO!!!
  */
 public class Vector2d {
     public double x;
@@ -61,7 +58,8 @@ public class Vector2d {
     }
 
     public Vector2d rotate(double radians) {
-        return new Vector2d(x * Math.cos(radians) - y * Math.sin(radians), x * Math.sin(radians) + y * Math.cos(radians));
+        return new Vector2d(x * Math.cos(radians) - y * Math.sin(radians),
+                x * Math.sin(radians) + y * Math.cos(radians));
     }
 
     public double angle(Vector2d vector) {
@@ -75,9 +73,6 @@ public class Vector2d {
 
     @Override
     public String toString() {
-        return "Vector2d{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return "Vector2d{" + "x=" + x + ", y=" + y + '}';
     }
 }

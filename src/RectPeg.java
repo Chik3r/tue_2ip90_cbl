@@ -64,15 +64,9 @@ public class RectPeg extends Peg {
 
     @Override
     public void draw(GraphicsWrapper g) {
-        Color colour = (orange) ? new Color(255, 153, 51) : Color.blue;
-        g.fillRotatedRect((int) pos.x, (int) pos.y, width, height, angle, colour);
-        colour = (orange) ? Color.orange : Color.cyan; 
+        g.fillRotatedRect((int) pos.x, (int) pos.y, width, height, angle, determineOuterColor());
         g.fillRotatedRect((int) pos.x + 10, (int) pos.y + 10,
-                width - 20, height - 20, angle, colour);
-        if (beenHit) {
-            // TODO: fancy particles :D
-            // make it glowy
-        }
+                width - 20, height - 20, angle, determineInnerColor());
     }
 
     @Override

@@ -86,7 +86,7 @@ public class CircleCollider extends Collider {
 
         // If the velocity/displacement of the circle is too small, swept collision won't work properly.
         // So we fall back to normal static collision
-        if (circleVel.length() < 10) {
+        if (circleVel.length() < 1) {
             Hit result = isTouchingLineSimple(lineStart, lineEnd);
             if (result != null) {
                 return new LineHit(result.delta(), result.normal(), 0);

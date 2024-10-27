@@ -204,11 +204,15 @@ public class Game implements Runnable {
                     entity.draw(wrapper);
                 }
 
-                if (entities.stream().noneMatch(x -> x instanceof Peg)) {
+                if (entities.stream().noneMatch(x -> x instanceof Peg && ((Peg) x).orange)) {
                     // No more pegs, show win screen
-                    g.setColor(Color.red);
                     var font  = g.getFont();
                     font = font.deriveFont(font.getSize() * 4f);
+                    // Shadow
+                    g.setColor(Color.gray);
+                    wrapper.drawString("YOU ARE THE PEGGING MASTER", frameBounds.width / 2 + 2, frameBounds.height / 2 + 2, font);
+                    // Actual text
+                    g.setColor(Color.red);
                     wrapper.drawString("YOU ARE THE PEGGING MASTER", frameBounds.width / 2, frameBounds.height / 2, font);
                 }
 

@@ -236,7 +236,7 @@ public class Game implements Runnable {
 
                     wrapper.fillRect(frameBounds.width / 4, frameBounds.height / 4, 
                                     frameBounds.width / 2, frameBounds.height / 2);
-                    g.setColor(Color.gray);
+                    g.setColor(Color.black);
                     wrapper.drawString(info, frameBounds.width / 2, frameBounds.height / 4 - 15, font);
                 }
 

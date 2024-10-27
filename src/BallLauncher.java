@@ -14,7 +14,7 @@ public class BallLauncher extends Entity {
 
     public BallLauncher(int screenWidth) {
         center = new Vector2d(screenWidth / 2.0, 20);
-        this.image = AssetLoader.loadImage("assets/ball_launcher.png");
+        this.image = AssetLoader.loadImage("assets/Rob_Boss_launcher.png");
     }
 
     @Override

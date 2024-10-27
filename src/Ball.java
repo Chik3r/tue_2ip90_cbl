@@ -29,7 +29,7 @@ public class Ball extends Entity {
         // TODO: pointing from the center top of the screen to the end of the cannon
         this.velocity = new Vector2d(0, 0);
         this.collider = new CircleCollider(new Vector2d(RADIUS, RADIUS), RADIUS);
-        this.kees = AssetLoader.loadImage("assets/kees_ball.png");
+        this.kees = AssetLoader.loadImage("assets/Rob_Boss.png");
     }
 
     public Vector2d getPos() {

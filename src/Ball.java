@@ -5,7 +5,7 @@ import java.awt.*;
  */
 public class Ball extends Entity {
     // TODO: test the perfect values for constants
-    static final int RADIUS = 10; // RADIUS of the ball
+    static final int RADIUS = 6; // RADIUS of the ball
     static final double GRAVITY = 980; // the amount velocity.y should increase every second
     static final double FRICTION = 0.99; // coefficiont of friction
     static final double ELASTICITY = 0.8; // coefficient of restitution 

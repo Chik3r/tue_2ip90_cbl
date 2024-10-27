@@ -1,7 +1,4 @@
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  * This is a Ball.
@@ -32,14 +29,7 @@ public class Ball extends Entity {
         // TODO: pointing from the center top of the screen to the end of the cannon
         this.velocity = new Vector2d(0, 0);
         this.collider = new CircleCollider(new Vector2d(RADIUS, RADIUS), RADIUS);
-
-        try {
-            this.kees = ImageIO.read(new File("assets/kees_ball.png"));
-        } catch (IOException e) {
-            //TODO: REMOVE THIS
-            System.out.println("Nooooo you're pegging wrong :((((");
-        }
-
+        this.kees = AssetLoader.loadImage("assets/kees_ball.png");
     }
 
     public Vector2d getPos() {

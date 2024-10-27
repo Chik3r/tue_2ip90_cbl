@@ -1,8 +1,5 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class BallLauncher extends Entity {
     public static final double MIN_ANGLE = 0;
@@ -17,13 +14,7 @@ public class BallLauncher extends Entity {
 
     public BallLauncher(int screenWidth) {
         center = new Vector2d(screenWidth / 2.0, 20);
-
-        try {
-            this.image = ImageIO.read(new File("assets/ball_launcher.png"));
-        } catch (IOException e) {
-            //TODO: REMOVE THIS
-            System.out.println("Nooooo you're pegging wrong 2 :((((");
-        }
+        this.image = AssetLoader.loadImage("assets/ball_launcher.png");
     }
 
     @Override

@@ -1,11 +1,8 @@
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Game implements Runnable {
@@ -115,20 +112,14 @@ public class Game implements Runnable {
     }
 
     private void initializeLevel(String level) {
-        try {
-            this.background = ImageIO.read(new File("levels/" + level + "/Backgr.png"));
-        } catch (IOException e) {
-            //TODO: REMOVE THIS
-            System.out.println("Nooooo you're pegging wrong 3 :((((");
-        }
-        File instructions = new File("levels\\" + level + "\\" + level + ".txt");
+        this.background = AssetLoader.loadImage("levels/" + level + "/Backgr.png");
         Scanner scanner = null;
         try {
-            scanner = new Scanner(instructions);
-        } catch (FileNotFoundException e) {
+            scanner = new Scanner(Objects.requireNonNull(
+                    AssetLoader.loadStream("levels/" + level + "/" + level + ".txt")));
+        } catch (NullPointerException e) {
             System.out.println("awawwwa");
         }
-
         initializeEntities(scanner);
 
         scanner.close();

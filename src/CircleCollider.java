@@ -78,6 +78,13 @@ public class CircleCollider extends Collider {
         g.drawOval((int) (worldCenter.x - radius), (int) (worldCenter.y - radius), (int) (radius*2), (int) (radius*2), Color.green);
     }
 
+    /**
+     * Calculates at what time the circle collides with a line using math.
+     * @param lineStart The start point of the line
+     * @param lineEnd The end point of the line
+     * @return The time the circle hit the line during its movement, the delta to not collide with
+       the line, and the line's normal.
+     */
     private LineHit isTouchingLineSweep(Vector2d lineStart, Vector2d lineEnd) {
         Vector2d oldWorldPos = getOldWorldPos();
         Vector2d worldCenter = getWorldCenter();
@@ -206,7 +213,8 @@ public class CircleCollider extends Collider {
         var dot = centerToLineStart.dotp(line) / line.length();
 
         Vector2d closest = lineStart.add(line.unit().scalarMult(dot));
-        double closestDistanceSum = Math.sqrt(closest.distanceSquared(lineStart)) + Math.sqrt(closest.distanceSquared(lineEnd));
+        double closestDistanceSum = Math.sqrt(closest.distanceSquared(lineStart))
+                + Math.sqrt(closest.distanceSquared(lineEnd));
         if (Math.abs(closestDistanceSum - line.length()) > 0.001) {
             // 0.001 to account for some error
             // If the sum of the distance of the closest point to both extremes of the line is

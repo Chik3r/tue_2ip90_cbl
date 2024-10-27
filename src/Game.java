@@ -83,7 +83,11 @@ public class Game implements Runnable {
             // Update the physics as many times as needed to catch up
             int updateCount = 0;
             while (now - lastUpdateTime >= TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BETWEEN_RENDER) {
-                update(elapsedMillis);
+                // Split physics updates into 4 updates
+                for (int i = 0; i < 4; i++) {
+                    update(elapsedMillis / 4.0f);
+                }
+
                 lastUpdateTime += TIME_BETWEEN_UPDATES;
                 updateCount++;
             }

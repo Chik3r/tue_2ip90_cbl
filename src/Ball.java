@@ -145,7 +145,8 @@ public class Ball extends Entity {
     public void collisionCalc(Hit hit) {
         // puts ball back to before collision
 
-        pos = pos.add(hit.delta());
+        // Multiply by 1.1 to prevent some collision errors
+        pos = pos.add(hit.delta().scalarMult(1.1));
         collider.setWorldPos(pos);   
 
         // calculate the tangent of the static cirle at the point of collision (Not needed with Hit)

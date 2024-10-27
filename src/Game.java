@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class Game implements Runnable {
     private static final int FRAMES_PER_SECOND = 60;
@@ -21,6 +22,7 @@ public class Game implements Runnable {
     BufferStrategy bufferStrategy;
     Thread gameLoopThread;
     Image background;
+    String info;
 
     public Game() {
         instance = this;
@@ -46,6 +48,12 @@ public class Game implements Runnable {
                     }
                 }
             }
+        }
+    }
+
+    public void clearInfo() {
+        if (inputManager.isPressed(KeyEvent.VK_ENTER)) {
+            info = "";
         }
     }
 
@@ -116,6 +124,13 @@ public class Game implements Runnable {
         Scanner scanner = null;
         try {
             scanner = new Scanner(Objects.requireNonNull(
+                    AssetLoader.loadStream("levels/" + level + "/intro.txt")));
+        } catch (NullPointerException e) {
+            System.out.println("awwawawaww");
+        }
+        getInfo(scanner);
+        try {
+            scanner = new Scanner(Objects.requireNonNull(
                     AssetLoader.loadStream("levels/" + level + "/" + level + ".txt")));
         } catch (NullPointerException e) {
             System.out.println("awawwwa");
@@ -151,7 +166,7 @@ public class Game implements Runnable {
 
     private void initializeEntities(Scanner scanner) {
         entities.add(new BallLauncher(frameBounds.width));
-        entities.add(new Ball(0, 0));
+        entities.add(new Ball(0,0));
 
         while (scanner.hasNextLine()) {
             String[] line = scanner.nextLine().split(" ");
@@ -187,6 +202,13 @@ public class Game implements Runnable {
                 new Rectangle(0, 0, frameBounds.width, frameBounds.height)));
     }
 
+    public void getInfo(Scanner scanner) {
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            info += line + "\n";
+        }
+    }
+
     private void draw(float deltaTime) {
         // The official documentation recommends to have both of these while loops
         // https://docs.oracle.com/javase/6/docs/api/java/awt/image/BufferStrategy.html
@@ -203,6 +225,16 @@ public class Game implements Runnable {
 
                 for (Entity entity : entities) {
                     entity.draw(wrapper);
+                }
+
+                if (!info.equals("")){
+                    var font = g.getFont();
+                    font = font.deriveFont(font.getSize() * 4f);
+
+                    wrapper.fillRect(frameBounds.x / 4, frameBounds.y / 4, 
+                                    frameBounds.width / 2, frameBounds.height / 2);
+                    g.setColor(Color.gray);
+                    wrapper.drawString(info, frameBounds.width / 2, frameBounds.height / 2, font);
                 }
 
                 if (entities.stream().noneMatch(x -> x instanceof Peg && ((Peg) x).orange)) {
@@ -231,5 +263,6 @@ public class Game implements Runnable {
         }
         //needed because removing entities while looping over them to update is big nono
         clearEntities();
+        clearInfo();
     }
 }

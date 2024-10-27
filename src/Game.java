@@ -203,6 +203,7 @@ public class Game implements Runnable {
     }
 
     public void getInfo(Scanner scanner) {
+        info = "\n\n";
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             info += line + "\n";
@@ -229,12 +230,12 @@ public class Game implements Runnable {
 
                 if (!info.equals("")){
                     var font = g.getFont();
-                    font = font.deriveFont(font.getSize() * 4f);
+                    font = font.deriveFont(font.getSize() * 1.2f);
 
-                    wrapper.fillRect(frameBounds.x / 4, frameBounds.y / 4, 
+                    wrapper.fillRect(frameBounds.width / 4, frameBounds.height / 4, 
                                     frameBounds.width / 2, frameBounds.height / 2);
                     g.setColor(Color.gray);
-                    wrapper.drawString(info, frameBounds.width / 2, frameBounds.height / 2, font);
+                    wrapper.drawString(info, frameBounds.width / 2, frameBounds.height / 4, font);
                 }
 
                 if (entities.stream().noneMatch(x -> x instanceof Peg && ((Peg) x).orange)) {

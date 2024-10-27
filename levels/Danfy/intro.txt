@@ -1,8 +1,10 @@
 Oh no!
 
-The dastardly, totally-not-copyright-infringing specification language Danfy is attacking you!
+The dastardly, totally-not-copyright-infringing 
+specification language Danfy is attacking you!
 
-Its peg-based defenses are tough, but we’ve marked its weak spots in orange, clear them all in order to defeat it.
+Its peg-based defenses are tough, 
+but we have marked its weak spots in orange, clear them all in order to defeat it.
 Now, wield the magical balls of Rob Boss and give Danfy a real lesson in pegging!
 
 LEFT / RIGHT ARROW KEYS - Rotate cannon

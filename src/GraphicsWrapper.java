@@ -70,9 +70,8 @@ public class GraphicsWrapper {
         aft.rotate(radians, image.getWidth(null) / 2.0, image.getHeight(null) / 2.0);
         graphics.drawImage(image, aft, null);
     }
-
-    /**
-     * Draws text.
+        /**
+     * Draws text
      * @param string The string to render
      * @param x The string will be centered around this point
      * @param y The string will be centered around this point
@@ -80,10 +79,11 @@ public class GraphicsWrapper {
      */
     public void drawString(String string, int x, int y, Font font) {
         FontMetrics metrics = graphics.getFontMetrics(font);
-        int realX = x - metrics.stringWidth(string) / 2;
         int realY = y - metrics.getHeight() / 2 + metrics.getAscent();
-
         graphics.setFont(font);
-        graphics.drawString(string, realX, realY);
+        for (String line : string.split("\n")) {
+            int realX = x - metrics.stringWidth(line) / 2;
+            graphics.drawString(line, realX, realY += metrics.getHeight());
+        }
     }
 }
